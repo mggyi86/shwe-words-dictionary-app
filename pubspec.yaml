@@ -1,0 +1,61 @@
+name: shwewords
+description: English Myanmar Dictionary - ShweWords. Offline-first dictionary with FTS5 search.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.11.5
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  drift: ^2.22.1
+  sqlite3_flutter_libs: ^0.5.28
+  path_provider: ^2.1.5
+  path: ^1.9.1
+  flutter_riverpod: ^2.6.1
+  riverpod_annotation: ^2.6.1
+  freezed_annotation: ^2.4.4
+  json_annotation: ^4.9.0
+  dio: ^5.7.0
+  archive: ^4.0.2
+  go_router: ^14.6.2
+  shared_preferences: ^2.3.3
+  hive_flutter: ^1.1.0
+  connectivity_plus: ^6.1.1
+  share_plus: ^10.1.3
+  google_fonts: ^6.2.1
+  crypto: ^3.0.6
+  collection: ^1.19.0
+  intl: ^0.20.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+  flutter_launcher_icons: ^0.14.4
+  build_runner: ^2.4.13
+  drift_dev: ^2.22.1
+  freezed: ^2.5.7
+  json_serializable: ^6.9.0
+  riverpod_generator: ^2.6.3
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: AppIcons/appstore.png
+  remove_alpha_ios: true
+  adaptive_icon_background: "#000000"
+  adaptive_icon_foreground: assets/images/app_icon.png
+  web:
+    generate: true
+    image_path: AppIcons/appstore.png
+    background_color: "#000000"
+    theme_color: "#1B7A5E"
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/dev/
+    - assets/images/
