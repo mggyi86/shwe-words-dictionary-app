@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:shwewords/core/providers/pronunciation_provider.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
 import 'package:shwewords/core/theme/app_theme.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
@@ -46,6 +47,16 @@ class _WordDetailContent extends ConsumerWidget {
       appBar: AppBar(
         title: Text(entry.word),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.volume_up_rounded),
+            tooltip: 'Pronunciation',
+            onPressed: () => pronounceWord(
+              ref,
+              word: entry.word,
+              language: entry.language,
+              context: context,
+            ),
+          ),
           IconButton(
             icon: Icon(
               isFavorite ? Icons.star : Icons.star_border,

@@ -1,6 +1,7 @@
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:shwewords/core/theme/app_colors.dart';
 
 final _connectivityStreamProvider = StreamProvider<List<ConnectivityResult>>((ref) {
   return Connectivity().onConnectivityChanged;
@@ -29,7 +30,7 @@ class OfflineIndicator extends ConsumerWidget {
         child: Icon(
           Icons.cloud_off_outlined,
           size: 20,
-          color: Theme.of(context).colorScheme.outline,
+          color: AppColors.goldBorder(Theme.of(context).brightness),
         ),
       ),
     );

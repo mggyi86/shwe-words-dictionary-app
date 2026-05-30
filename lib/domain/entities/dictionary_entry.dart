@@ -42,4 +42,18 @@ extension DictionaryEntryX on DictionaryEntry {
 
   List<String> get allExamples =>
       definitions.expand((d) => d.examples).toList();
+
+  /// Compact preview for search result cards (`~ gloss meaning`).
+  String get cardPreviewLine {
+    final meaning = primaryMeaning;
+    final pos = definitions.isNotEmpty ? definitions.first.pos : null;
+    if (pos != null && pos.isNotEmpty) {
+      if (meaning.isNotEmpty && meaning != pos) {
+        return '~ $pos $meaning';
+      }
+      return '~ $pos';
+    }
+    if (meaning.isNotEmpty) return '~ $meaning';
+    return '';
+  }
 }
