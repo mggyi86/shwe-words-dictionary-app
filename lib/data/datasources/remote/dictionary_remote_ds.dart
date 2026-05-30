@@ -39,9 +39,10 @@ class DictionaryRemoteDataSource {
     required DictionaryMetadata metadata,
     required void Function(DownloadStatus status) onStatus,
     String? downloadUrl,
+    String databaseFileName = AppConfig.databaseFileName,
   }) async {
     _cancelToken = CancelToken();
-    final dbPath = p.join(documentsPath, AppConfig.databaseFileName);
+    final dbPath = p.join(documentsPath, databaseFileName);
     final gzPath = p.join(documentsPath, AppConfig.databaseTempGzipFileName);
     final gzFile = File(gzPath);
 

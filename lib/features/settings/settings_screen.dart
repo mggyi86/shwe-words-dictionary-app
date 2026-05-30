@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
+import 'package:shwewords/core/router/app_router.dart';
 import 'package:shwewords/core/theme/myanmar_font_choice.dart';
 import 'package:shwewords/features/initialization/providers/initialization_provider.dart';
 import 'package:shwewords/features/settings/providers/settings_provider.dart';
@@ -108,13 +110,7 @@ class SettingsScreen extends ConsumerWidget {
                 title: const Text('Re-download dictionary'),
                 subtitle: const Text('Fetch latest database from GitHub Releases'),
                 trailing: const Icon(Icons.download),
-                onTap: () async {
-                  await ref.read(downloadRepositoryProvider).deleteLocalDatabase();
-                  ref.invalidate(initializationProvider);
-                  if (context.mounted) {
-                    Navigator.of(context).pop();
-                  }
-                },
+                onTap: () => _confirmRedownload(context, ref),
               ),
               if (kDebugMode && AppConfig.useBundledDatabaseInDebug)
                 ListTile(
@@ -146,5 +142,49 @@ class SettingsScreen extends ConsumerWidget {
       ThemeMode.light => 'Light',
       ThemeMode.dark => 'Dark',
     };
+  }
+
+  Future<void> _confirmRedownload(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Re-download dictionary?'),
+        content: const Text(
+          'A new dictionary will be downloaded while keeping your current one. '
+          'If the download fails, the existing dictionary stays in place. '
+          'On success, the old file is replaced.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Re-download'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true || !context.mounted) return;
+    await _redownloadDictionary(context, ref);
+  }
+
+  Future<void> _redownloadDictionary(BuildContext context, WidgetRef ref) async {
+    context.go(AppRoutes.download);
+
+    final metadata =
+        await ref.read(downloadRepositoryProvider).fetchRemoteMetadata();
+    if (metadata == null) return;
+
+    await ref.read(downloadControllerProvider.notifier).startDownload(
+          metadata: metadata,
+          preserveExistingDatabase: true,
+        );
+
+    ref.invalidate(dbVersionProvider);
+    ref.invalidate(entryCountProvider);
+    ref.invalidate(initializationProvider);
   }
 }

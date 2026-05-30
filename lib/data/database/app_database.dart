@@ -69,6 +69,29 @@ class AppDatabase extends _$AppDatabase {
     _instance = null;
   }
 
+  /// Opens [path] in a temporary connection for validation (does not touch [_instance]).
+  static Future<bool> validateFile(String path) async {
+    final file = File(path);
+    if (!file.existsSync()) return false;
+
+    final executor = NativeDatabase.createInBackground(
+      file,
+      setup: (db) {
+        db.execute('PRAGMA journal_mode = OFF');
+        db.execute('PRAGMA cache_size = -64000');
+        db.execute('PRAGMA temp_store = MEMORY');
+      },
+    );
+
+    final db = AppDatabase.connect(executor);
+    try {
+      await db.customStatement('PRAGMA query_only = ON');
+      return await db.validateIntegrity();
+    } finally {
+      await db.close();
+    }
+  }
+
   Future<int> countEntries() async {
     final row = await customSelect('SELECT COUNT(*) AS c FROM entries').getSingle();
     return row.read<int>('c');

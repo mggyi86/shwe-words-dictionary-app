@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/data/datasources/local/dictionary_local_ds.dart';
 import 'package:shwewords/data/datasources/remote/dictionary_remote_ds.dart';
 import 'package:shwewords/domain/entities/dictionary_metadata.dart';
@@ -39,7 +40,10 @@ class DownloadRepositoryImpl implements DownloadRepository {
   }
 
   @override
-  Future<void> downloadDictionary({DictionaryMetadata? metadata}) async {
+  Future<void> downloadDictionary({
+    DictionaryMetadata? metadata,
+    bool preserveExistingDatabase = false,
+  }) async {
     final meta = metadata ?? await fetchRemoteMetadata();
     if (meta == null) {
       _emit(const DownloadStatus.failed(
@@ -48,29 +52,65 @@ class DownloadRepositoryImpl implements DownloadRepository {
       return;
     }
 
-    await _local.closeDatabase();
+    final hasExisting = await _local.databaseExists();
+    final useStaging = preserveExistingDatabase && hasExisting;
+
+    if (!useStaging) {
+      await _local.closeDatabase();
+    } else {
+      await _local.discardStagingDatabase();
+    }
+
     final dir = await _local.getDocumentsDirectory();
+    final outputFileName = useStaging
+        ? AppConfig.databaseStagingFileName
+        : AppConfig.databaseFileName;
 
     try {
       await _remote.downloadAndExtract(
         documentsPath: dir.path,
         metadata: meta,
         onStatus: _emit,
+        databaseFileName: outputFileName,
       );
 
-      await _local.openDatabase();
-      final valid = await _local.validateIntegrity();
-      if (!valid) {
-        _emit(const DownloadStatus.failed(
-          message: 'Database integrity check failed',
-        ));
-        return;
+      if (useStaging) {
+        final stagingPath = await _local.getStagingDatabasePath();
+        final valid = await _local.validateDatabaseFile(stagingPath);
+        if (!valid) {
+          await _local.discardStagingDatabase();
+          _emit(const DownloadStatus.failed(
+            message: 'Downloaded database integrity check failed',
+          ));
+          return;
+        }
+
+        await _local.promoteStagingDatabase();
+      } else {
+        await _local.openDatabase();
+        final valid = await _local.validateIntegrity();
+        if (!valid) {
+          _emit(const DownloadStatus.failed(
+            message: 'Database integrity check failed',
+          ));
+          return;
+        }
       }
 
       await _local.saveLocalDbVersion(meta.version);
       _emit(const DownloadStatus.ready());
     } catch (e) {
       if (kDebugMode) debugPrint('Download error: $e');
+      if (useStaging) {
+        await _local.discardStagingDatabase();
+      } else if (await _local.databaseExists()) {
+        try {
+          await _local.openDatabase();
+        } catch (_) {
+          // Leave closed if the on-disk file cannot be opened.
+        }
+      }
+      _emit(DownloadStatus.failed(message: e.toString()));
     }
   }
 

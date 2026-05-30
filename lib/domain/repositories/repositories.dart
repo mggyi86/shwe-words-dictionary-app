@@ -33,7 +33,10 @@ abstract class DownloadRepository {
   Stream<DownloadStatus> get statusStream;
   Future<DictionaryMetadata?> fetchRemoteMetadata();
   Future<bool> needsDownload({DictionaryMetadata? remoteMetadata});
-  Future<void> downloadDictionary({DictionaryMetadata? metadata});
+  Future<void> downloadDictionary({
+    DictionaryMetadata? metadata,
+    bool preserveExistingDatabase = false,
+  });
   Future<void> copyBundledDatabase();
   Future<void> cancelDownload();
   Future<void> deleteLocalDatabase();

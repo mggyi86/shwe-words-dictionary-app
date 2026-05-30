@@ -78,11 +78,15 @@ class DownloadController extends Notifier<AsyncValue<void>> {
   @override
   AsyncValue<void> build() => const AsyncData(null);
 
-  Future<void> startDownload({DictionaryMetadata? metadata}) async {
+  Future<void> startDownload({
+    DictionaryMetadata? metadata,
+    bool preserveExistingDatabase = false,
+  }) async {
     state = const AsyncLoading();
     try {
       await ref.read(downloadRepositoryProvider).downloadDictionary(
             metadata: metadata,
+            preserveExistingDatabase: preserveExistingDatabase,
           );
       ref.invalidate(initializationProvider);
       state = const AsyncData(null);

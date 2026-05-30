@@ -34,6 +34,11 @@ class DictionaryLocalDataSource {
 
   Future<String> getDatabasePath() => AppDatabase.databaseFilePath();
 
+  Future<String> getStagingDatabasePath() async {
+    final mainPath = await getDatabasePath();
+    return p.join(File(mainPath).parent.path, AppConfig.databaseStagingFileName);
+  }
+
   Future<bool> databaseExists() async {
     final path = await getDatabasePath();
     return File(path).existsSync();
@@ -56,6 +61,62 @@ class DictionaryLocalDataSource {
 
   Future<bool> validateIntegrity() async {
     return database.validateIntegrity();
+  }
+
+  Future<bool> validateDatabaseFile(String path) => AppDatabase.validateFile(path);
+
+  /// Replaces the live database with a validated staging file and deletes the old file.
+  Future<void> promoteStagingDatabase() async {
+    final mainPath = await getDatabasePath();
+    final stagingPath = await getStagingDatabasePath();
+    final dir = File(mainPath).parent;
+    final backupPath = p.join(dir.path, AppConfig.databaseBackupFileName);
+
+    final staging = File(stagingPath);
+    if (!staging.existsSync()) {
+      throw StateError('Staging database missing at $stagingPath');
+    }
+
+    await closeDatabase();
+
+    final main = File(mainPath);
+    final backup = File(backupPath);
+    if (backup.existsSync()) await backup.delete();
+
+    var movedOldAside = false;
+    if (main.existsSync()) {
+      await main.rename(backupPath);
+      movedOldAside = true;
+    }
+
+    try {
+      await staging.rename(mainPath);
+      if (backup.existsSync()) await backup.delete();
+    } catch (e) {
+      if (movedOldAside && backup.existsSync()) {
+        if (main.existsSync()) await main.delete();
+        await backup.rename(mainPath);
+      }
+      rethrow;
+    } finally {
+      await openDatabase();
+    }
+  }
+
+  Future<void> discardStagingDatabase() async {
+    final stagingPath = await getStagingDatabasePath();
+    final staging = File(stagingPath);
+    if (staging.existsSync()) await staging.delete();
+
+    final mainPath = await getDatabasePath();
+    final dir = File(mainPath).parent;
+    for (final name in [
+      AppConfig.databaseTempGzipFileName,
+      AppConfig.databaseGzipFileName,
+    ]) {
+      final file = File(p.join(dir.path, name));
+      if (file.existsSync()) await file.delete();
+    }
   }
 
   Future<String?> getLocalDbVersion() async {

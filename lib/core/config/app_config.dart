@@ -7,11 +7,13 @@ class AppConfig {
 
   /// Direct URLs for dictionary assets (GitHub user-attachments or release assets).
   static const metadataUrl =
-      'https://github.com/user-attachments/files/28405503/metadata.json';
+      'https://github.com/user-attachments/files/28418064/metadata.json';
   static const databaseDownloadUrl =
-      'https://github.com/user-attachments/files/28405504/dictionary.db.gz';
+      'https://github.com/user-attachments/files/28418062/dictionary.db.gz';
 
   static const databaseFileName = 'dictionary.db';
+  static const databaseStagingFileName = 'dictionary.db.new';
+  static const databaseBackupFileName = 'dictionary.db.bak';
   static const databaseGzipFileName = 'dictionary.db.gz';
   static const databaseTempGzipFileName = 'dictionary.db.gz.tmp';
 
