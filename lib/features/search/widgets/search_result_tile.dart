@@ -25,15 +25,10 @@ class SearchResultTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final entry = result.entry;
-    final lines = MeaningDisplay.fromEntry(entry);
+    final sections = MeaningDisplay.cardSectionsFromEntry(entry);
     final myanmarStyle = Theme.of(context).extension<MyanmarTypography>();
-    final hasEnglish =
-        lines.englishLine != null && lines.englishLine!.isNotEmpty;
-    final hasMyanmar =
-        lines.myanmarLine != null && lines.myanmarLine!.isNotEmpty;
     final posColor = isDark ? Colors.grey[400]! : Colors.black54;
-    final englishDefinitionColor = isDark ? Colors.white : Colors.black87;
-    final myanmarDefinitionColor = isDark ? Colors.grey[200]! : Colors.black87;
+    final definitionColor = isDark ? Colors.grey[200]! : Colors.black87;
 
     final isFavAsync = ref.watch(
       favoriteStatusProvider((word: entry.word, language: entry.language)),
@@ -74,61 +69,39 @@ class SearchResultTile extends ConsumerWidget {
                           letterSpacing: 0.3,
                         ),
                       ),
-                      const SizedBox(height: 4),
-                      if (lines.pos != null) ...[
+                      const SizedBox(height: 8),
+                      for (var i = 0; i < sections.length; i++) ...[
+                        if (i > 0) const SizedBox(height: 10),
                         Text(
-                          '~ ${lines.pos} ~',
+                          sections[i].pos,
                           style: TextStyle(
                             color: posColor,
                             fontSize: 14,
                             fontStyle: FontStyle.italic,
                           ),
                         ),
-                        if (hasEnglish || hasMyanmar)
-                          const SizedBox(height: 8),
-                      ],
-                      if (hasEnglish) ...[
-                        Text(
-                          lines.englishLine!,
-                          style: TextStyle(
-                            color: englishDefinitionColor,
-                            fontSize: 15,
-                            height: 1.4,
-                          ),
-                        ),
-                        if (hasMyanmar) const SizedBox(height: 6),
-                      ],
-                      if (hasMyanmar)
-                        Text.rich(
-                          TextSpan(
-                            children: [
-                              if (lines.pos != null)
-                                TextSpan(
-                                  text: '${lines.pos} ',
-                                  style: TextStyle(
-                                    color: posColor,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                              TextSpan(
-                                text: lines.myanmarLine,
-                                style: myanmarStyle?.myanmar(
-                                      context,
-                                      TextStyle(
-                                        color: myanmarDefinitionColor,
-                                        fontSize: 15,
-                                        height: 1.4,
-                                      ),
-                                    ) ??
+                        const SizedBox(height: 4),
+                        for (final line in sections[i].lines)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 4),
+                            child: Text(
+                              line,
+                              style: myanmarStyle?.myanmar(
+                                    context,
                                     TextStyle(
-                                      color: myanmarDefinitionColor,
+                                      color: definitionColor,
                                       fontSize: 15,
                                       height: 1.4,
                                     ),
-                              ),
-                            ],
+                                  ) ??
+                                  TextStyle(
+                                    color: definitionColor,
+                                    fontSize: 15,
+                                    height: 1.4,
+                                  ),
+                            ),
                           ),
-                        ),
+                      ],
                     ],
                   ),
                 ),

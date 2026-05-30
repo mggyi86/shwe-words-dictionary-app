@@ -66,5 +66,51 @@ void main() {
       expect(lines.englishLine, "Let's go for a paddle.");
       expect(lines.myanmarLine, 'တက်');
     });
+
+    test('cardSectionsFromEntry groups two noun and one verb lines', () {
+      const entry = DictionaryEntry(
+        word: 'add',
+        language: 'en',
+        definitions: [
+          Definition(
+            pos: 'noun',
+            meanings: [
+              '~ addition ထပ်ပေါင်းခြင်း',
+              '~ in addition to ထို့ အပြင်',
+            ],
+          ),
+          Definition(
+            pos: 'verb',
+            meanings: ['ထည့်သည်', 'ပေါင်းသည်'],
+          ),
+        ],
+      );
+
+      final sections = MeaningDisplay.cardSectionsFromEntry(entry);
+
+      expect(sections.length, 2);
+      expect(sections[0].pos, 'noun');
+      expect(sections[0].lines, [
+        '~ addition ထပ်ပေါင်းခြင်း',
+        '~ in addition to ထို့ အပြင်',
+      ]);
+      expect(sections[1].pos, 'verb');
+      expect(sections[1].lines, ['- ထည့်သည်']);
+    });
+
+    test('formatCardLine prefixes noun and verb lines', () {
+      expect(
+        MeaningDisplay.formatCardLine('addition ထပ်ပေါင်းခြင်း', 'noun'),
+        '~ addition ထပ်ပေါင်းခြင်း',
+      );
+      expect(
+        MeaningDisplay.formatCardLine('~ addition ထပ်ပေါင်းခြင်း', 'noun'),
+        '~ addition ထပ်ပေါင်းခြင်း',
+      );
+      expect(
+        MeaningDisplay.formatCardLine('ထည့်သည်', 'verb'),
+        '- ထည့်သည်',
+      );
+    });
   });
 }
