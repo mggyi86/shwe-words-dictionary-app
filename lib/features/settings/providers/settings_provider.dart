@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
 import 'package:shwewords/domain/entities/download_status.dart';
 
-final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.system);
+final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
 
 final settingsProvider =
     AsyncNotifierProvider<SettingsNotifier, AppSettings>(

@@ -1301,7 +1301,7 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
 class _$AppSettingsImpl implements _AppSettings {
   const _$AppSettingsImpl({
     this.wifiOnlyDownload = false,
-    this.myanmarFontScale = 1.0,
+    this.myanmarFontScale = 1.2,
     this.preferredLanguage = 'en',
   });
 

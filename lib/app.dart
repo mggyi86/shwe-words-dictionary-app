@@ -12,7 +12,7 @@ class ShweWordsApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final settings = ref.watch(settingsProvider);
-    final fontScale = settings.valueOrNull?.myanmarFontScale ?? 1.0;
+    final fontScale = settings.valueOrNull?.myanmarFontScale ?? 1.2;
 
     return MaterialApp.router(
       title: AppConfig.appName,

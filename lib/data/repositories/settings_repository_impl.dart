@@ -17,7 +17,7 @@ class SettingsRepositoryImpl implements SettingsRepository {
       final map = jsonDecode(raw) as Map<String, dynamic>;
       return AppSettings(
         wifiOnlyDownload: map['wifiOnlyDownload'] as bool? ?? false,
-        myanmarFontScale: (map['myanmarFontScale'] as num?)?.toDouble() ?? 1.0,
+        myanmarFontScale: (map['myanmarFontScale'] as num?)?.toDouble() ?? 1.2,
         preferredLanguage: map['preferredLanguage'] as String? ?? 'en',
       );
     } catch (_) {

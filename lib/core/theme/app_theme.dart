@@ -15,7 +15,7 @@ class AppTheme {
     return GoogleFonts.interTextTheme(base);
   }
 
-  static ThemeData light({double myanmarFontScale = 1.0}) {
+  static ThemeData light({double myanmarFontScale = 1.2}) {
     const brightness = Brightness.light;
     final colorScheme = ColorScheme(
       brightness: brightness,
@@ -85,7 +85,7 @@ class AppTheme {
     );
   }
 
-  static ThemeData dark({double myanmarFontScale = 1.0}) {
+  static ThemeData dark({double myanmarFontScale = 1.2}) {
     const brightness = Brightness.dark;
     final colorScheme = ColorScheme(
       brightness: brightness,
@@ -157,7 +157,7 @@ class AppTheme {
 }
 
 class MyanmarTypography extends ThemeExtension<MyanmarTypography> {
-  const MyanmarTypography({this.myanmarFontScale = 1.0});
+  const MyanmarTypography({this.myanmarFontScale = 1.2});
 
   final double myanmarFontScale;
 

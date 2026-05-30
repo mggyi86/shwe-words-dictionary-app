@@ -87,4 +87,26 @@ class AppColors {
       ),
     ];
   }
+
+  /// Accent colors for word-detail timeline sections (ORDBOK-style).
+  static Color detailSectionAccent(String section, Brightness brightness) {
+    final key = section.trim().toLowerCase();
+    final color = switch (key) {
+      'noun' => const Color(0xFFC8A2E0),
+      'verb' => const Color(0xFF6DB3D9),
+      'adjective' => const Color(0xFF8BC993),
+      'adverb' => const Color(0xFFE0C878),
+      'preposition' => const Color(0xFF90A4AE),
+      'conjunction' => const Color(0xFF90A4AE),
+      'interjection' => const Color(0xFF90A4AE),
+      'pronoun' => const Color(0xFF90A4AE),
+      'determiner' => const Color(0xFF90A4AE),
+      'antonym' => const Color(0xFFE8A854),
+      'thesaurus' => const Color(0xFFD47BA8),
+      _ => grey400,
+    };
+
+    if (brightness == Brightness.dark) return color;
+    return Color.lerp(color, lightTitle, 0.25)!;
+  }
 }

@@ -30,7 +30,7 @@ class DownloadStatus with _$DownloadStatus {
 class AppSettings with _$AppSettings {
   const factory AppSettings({
     @Default(false) bool wifiOnlyDownload,
-    @Default(1.0) double myanmarFontScale,
+    @Default(1.2) double myanmarFontScale,
     @Default('en') String preferredLanguage,
   }) = _AppSettings;
 }

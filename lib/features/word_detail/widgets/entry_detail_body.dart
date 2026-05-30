@@ -16,9 +16,11 @@ class EntryDetailBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = Theme.of(context).brightness;
     final sections = MeaningDisplay.detailSectionsFromEntry(entry);
-    final posColor = AppColors.mutedText(Theme.of(context).brightness);
-    final contentColor = AppColors.secondaryText(Theme.of(context).brightness);
+    final labelColor = AppColors.mutedText(brightness);
+    final contentColor = AppColors.secondaryText(brightness);
+    final primaryColor = AppColors.primaryText(brightness);
     final myanmarStyle = Theme.of(context).extension<MyanmarTypography>();
 
     return ListView(
@@ -34,8 +36,10 @@ class EntryDetailBody extends StatelessWidget {
         for (var i = 0; i < sections.length; i++) ...[
           _PosSection(
             section: sections[i],
-            posColor: posColor,
+            accentColor: AppColors.detailSectionAccent(sections[i].pos, brightness),
+            labelColor: labelColor,
             contentColor: contentColor,
+            primaryColor: primaryColor,
             myanmarStyle: myanmarStyle,
             showTimelineBelow: entry.synonyms.isNotEmpty || i < sections.length - 1,
           ),
@@ -47,7 +51,8 @@ class EntryDetailBody extends StatelessWidget {
             word: entry.word,
             language: entry.language,
             synonyms: entry.synonyms,
-            posColor: posColor,
+            accentColor: AppColors.detailSectionAccent('thesaurus', brightness),
+            labelColor: labelColor,
             contentColor: contentColor,
           ),
         ],
@@ -59,15 +64,19 @@ class EntryDetailBody extends StatelessWidget {
 class _PosSection extends StatelessWidget {
   const _PosSection({
     required this.section,
-    required this.posColor,
+    required this.accentColor,
+    required this.labelColor,
     required this.contentColor,
+    required this.primaryColor,
     required this.myanmarStyle,
     required this.showTimelineBelow,
   });
 
   final DetailSection section;
-  final Color posColor;
+  final Color accentColor;
+  final Color labelColor;
   final Color contentColor;
+  final Color primaryColor;
   final MyanmarTypography? myanmarStyle;
   final bool showTimelineBelow;
 
@@ -78,7 +87,7 @@ class _PosSection extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _TimelineMarker(
-            posColor: posColor,
+            accentColor: accentColor,
             showLine: showTimelineBelow,
           ),
           const SizedBox(width: 14),
@@ -89,7 +98,7 @@ class _PosSection extends StatelessWidget {
                 Text(
                   section.pos,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: posColor,
+                        color: labelColor,
                         fontStyle: FontStyle.italic,
                       ),
                 ),
@@ -99,6 +108,7 @@ class _PosSection extends StatelessWidget {
                   _DetailBlockView(
                     block: section.blocks[i],
                     contentColor: contentColor,
+                    primaryColor: primaryColor,
                     myanmarStyle: myanmarStyle,
                   ),
                 ],
@@ -113,11 +123,11 @@ class _PosSection extends StatelessWidget {
 
 class _TimelineMarker extends StatelessWidget {
   const _TimelineMarker({
-    required this.posColor,
+    required this.accentColor,
     required this.showLine,
   });
 
-  final Color posColor;
+  final Color accentColor;
   final bool showLine;
 
   @override
@@ -131,15 +141,15 @@ class _TimelineMarker extends StatelessWidget {
             height: 10,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: Border.all(color: posColor, width: 1.2),
+              border: Border.all(color: accentColor, width: 1.5),
             ),
           ),
           if (showLine)
             Expanded(
               child: Container(
-                width: 1,
+                width: 1.5,
                 margin: const EdgeInsets.symmetric(vertical: 4),
-                color: posColor.withValues(alpha: 0.35),
+                color: accentColor.withValues(alpha: 0.55),
               ),
             ),
         ],
@@ -152,11 +162,13 @@ class _DetailBlockView extends StatelessWidget {
   const _DetailBlockView({
     required this.block,
     required this.contentColor,
+    required this.primaryColor,
     required this.myanmarStyle,
   });
 
   final DetailBlock block;
   final Color contentColor;
+  final Color primaryColor;
   final MyanmarTypography? myanmarStyle;
 
   @override
@@ -175,6 +187,7 @@ class _DetailBlockView extends StatelessWidget {
           _MeaningLine(
             line: line,
             contentColor: contentColor,
+            primaryColor: primaryColor,
             myanmarStyle: myanmarStyle,
           ),
         for (final example in block.examples)
@@ -183,7 +196,7 @@ class _DetailBlockView extends StatelessWidget {
             child: SelectableText(
               example,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: contentColor.withValues(alpha: 0.85),
+                    color: contentColor.withValues(alpha: 0.7),
                     fontStyle: FontStyle.italic,
                     height: 1.45,
                   ),
@@ -216,24 +229,17 @@ class _MeaningLine extends StatelessWidget {
   const _MeaningLine({
     required this.line,
     required this.contentColor,
+    required this.primaryColor,
     required this.myanmarStyle,
   });
 
   final DetailMeaningLine line;
   final Color contentColor;
+  final Color primaryColor;
   final MyanmarTypography? myanmarStyle;
 
   @override
   Widget build(BuildContext context) {
-    final baseStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: contentColor,
-          height: 1.5,
-        );
-
-    final textStyle = MyanmarText.containsMyanmar(line.text)
-        ? myanmarStyle?.myanmar(context, baseStyle!) ?? baseStyle
-        : baseStyle;
-
     return Padding(
       padding: const EdgeInsets.only(bottom: 6),
       child: Row(
@@ -241,20 +247,16 @@ class _MeaningLine extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 3),
-            child: _LineMarker(kind: line.kind),
+            child: _LineMarker(kind: line.kind, contentColor: contentColor),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: line.kind == DetailLineKind.domain
-                ? _DomainLine(
-                    label: line.domainLabel ?? '',
-                    text: line.text,
-                    textStyle: textStyle,
-                  )
-                : SelectableText(
-                    line.text,
-                    style: textStyle,
-                  ),
+            child: _MeaningText(
+              line: line,
+              contentColor: contentColor,
+              primaryColor: primaryColor,
+              myanmarStyle: myanmarStyle,
+            ),
           ),
         ],
       ),
@@ -262,37 +264,127 @@ class _MeaningLine extends StatelessWidget {
   }
 }
 
-class _LineMarker extends StatelessWidget {
-  const _LineMarker({required this.kind});
+class _MeaningText extends StatelessWidget {
+  const _MeaningText({
+    required this.line,
+    required this.contentColor,
+    required this.primaryColor,
+    required this.myanmarStyle,
+  });
 
-  final DetailLineKind kind;
+  final DetailMeaningLine line;
+  final Color contentColor;
+  final Color primaryColor;
+  final MyanmarTypography? myanmarStyle;
+
+  TextStyle _baseStyle(BuildContext context, {Color? color, FontWeight? weight}) {
+    return Theme.of(context).textTheme.bodyLarge!.copyWith(
+          color: color ?? contentColor,
+          fontWeight: weight,
+          height: 1.5,
+        );
+  }
+
+  TextStyle _applyMyanmarTypography(BuildContext context, String text, TextStyle base) {
+    if (!MyanmarText.containsMyanmar(text)) return base;
+    return myanmarStyle?.myanmar(context, base) ?? base;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final color = AppColors.mutedText(Theme.of(context).brightness);
+    if (line.kind == DetailLineKind.domain) {
+      return _DomainLine(
+        label: line.domainLabel ?? '',
+        text: line.text,
+        contentColor: contentColor,
+        primaryColor: primaryColor,
+        myanmarStyle: myanmarStyle,
+      );
+    }
+
+    if (line.kind == DetailLineKind.gloss) {
+      final parsed = MeaningDisplay.parseMeaning(line.text);
+      final englishStyle = _baseStyle(context, color: contentColor.withValues(alpha: 0.85));
+      final myanmarBase = _baseStyle(
+        context,
+        color: primaryColor,
+        weight: FontWeight.w600,
+      );
+      final myanmarStyleResolved = _applyMyanmarTypography(
+        context,
+        parsed.myanmar ?? '',
+        myanmarBase,
+      );
+
+      final spans = <InlineSpan>[];
+      if (parsed.english != null && parsed.english!.isNotEmpty) {
+        spans.add(TextSpan(text: '~ ${parsed.english}', style: englishStyle));
+      } else if (line.text.startsWith('~')) {
+        spans.add(TextSpan(text: line.text, style: englishStyle));
+      }
+      if (parsed.myanmar != null && parsed.myanmar!.isNotEmpty) {
+        if (spans.isNotEmpty) {
+          spans.add(TextSpan(text: ' ', style: englishStyle));
+        }
+        spans.add(TextSpan(text: parsed.myanmar, style: myanmarStyleResolved));
+      }
+
+      if (spans.isEmpty) {
+        return SelectableText(line.text, style: englishStyle);
+      }
+      return SelectableText.rich(TextSpan(children: spans));
+    }
+
+    final isMyanmar = MyanmarText.containsMyanmar(line.text);
+    final style = _applyMyanmarTypography(
+      context,
+      line.text,
+      _baseStyle(
+        context,
+        color: isMyanmar ? primaryColor : contentColor,
+        weight: isMyanmar ? FontWeight.w600 : FontWeight.normal,
+      ),
+    );
+
+    return SelectableText(line.text, style: style);
+  }
+}
+
+class _LineMarker extends StatelessWidget {
+  const _LineMarker({
+    required this.kind,
+    required this.contentColor,
+  });
+
+  final DetailLineKind kind;
+  final Color contentColor;
+
+  @override
+  Widget build(BuildContext context) {
+    final markerColor = contentColor.withValues(alpha: 0.75);
 
     return switch (kind) {
       DetailLineKind.gloss => Icon(
           Icons.home_outlined,
           size: 14,
-          color: color,
+          color: markerColor,
         ),
       DetailLineKind.domain => Icon(
           Icons.star_outline_rounded,
           size: 14,
-          color: color,
+          color: markerColor,
         ),
       DetailLineKind.conjugation => Text(
           '-',
-          style: TextStyle(color: color, fontSize: 15, height: 1.2),
+          style: TextStyle(color: markerColor, fontSize: 15, height: 1.2),
         ),
       DetailLineKind.translation => Container(
-          width: 6,
-          height: 6,
-          margin: const EdgeInsets.only(top: 6),
+          width: 7,
+          height: 7,
+          margin: const EdgeInsets.only(top: 5),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: color.withValues(alpha: 0.8),
+            border: Border.all(color: markerColor, width: 1.2),
           ),
         ),
     };
@@ -303,16 +395,29 @@ class _DomainLine extends StatelessWidget {
   const _DomainLine({
     required this.label,
     required this.text,
-    required this.textStyle,
+    required this.contentColor,
+    required this.primaryColor,
+    required this.myanmarStyle,
   });
 
   final String label;
   final String text;
-  final TextStyle? textStyle;
+  final Color contentColor;
+  final Color primaryColor;
+  final MyanmarTypography? myanmarStyle;
 
   @override
   Widget build(BuildContext context) {
     final muted = AppColors.mutedText(Theme.of(context).brightness);
+    final isMyanmar = MyanmarText.containsMyanmar(text);
+    final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
+          color: isMyanmar ? primaryColor : contentColor,
+          fontWeight: isMyanmar ? FontWeight.w600 : FontWeight.normal,
+          height: 1.5,
+        );
+    final resolvedStyle = isMyanmar
+        ? myanmarStyle?.myanmar(context, textStyle!) ?? textStyle
+        : textStyle;
 
     return SelectableText.rich(
       TextSpan(
@@ -322,9 +427,10 @@ class _DomainLine extends StatelessWidget {
             style: textStyle?.copyWith(
               color: muted,
               fontStyle: FontStyle.italic,
+              fontWeight: FontWeight.normal,
             ),
           ),
-          TextSpan(text: text, style: textStyle),
+          TextSpan(text: text, style: resolvedStyle),
         ],
       ),
     );
@@ -336,14 +442,16 @@ class _ThesaurusSection extends ConsumerStatefulWidget {
     required this.word,
     required this.language,
     required this.synonyms,
-    required this.posColor,
+    required this.accentColor,
+    required this.labelColor,
     required this.contentColor,
   });
 
   final String word;
   final String language;
   final List<String> synonyms;
-  final Color posColor;
+  final Color accentColor;
+  final Color labelColor;
   final Color contentColor;
 
   @override
@@ -378,13 +486,14 @@ class _ThesaurusSectionState extends ConsumerState<_ThesaurusSection> {
     final linkStyle = baseStyle?.copyWith(
       color: AppColors.gold,
       decoration: TextDecoration.none,
+      fontWeight: FontWeight.w600,
     );
 
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _TimelineMarker(posColor: widget.posColor, showLine: false),
+          _TimelineMarker(accentColor: widget.accentColor, showLine: false),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
@@ -393,7 +502,7 @@ class _ThesaurusSectionState extends ConsumerState<_ThesaurusSection> {
                 Text(
                   'thesaurus',
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: widget.posColor,
+                        color: widget.labelColor,
                         fontStyle: FontStyle.italic,
                       ),
                 ),
@@ -401,7 +510,7 @@ class _ThesaurusSectionState extends ConsumerState<_ThesaurusSection> {
                 SelectableText(
                   '~ ${widget.synonyms.length} words related to ${widget.word}.',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: widget.contentColor.withValues(alpha: 0.9),
+                        color: widget.contentColor.withValues(alpha: 0.85),
                         height: 1.45,
                       ),
                 ),
