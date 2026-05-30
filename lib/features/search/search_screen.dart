@@ -257,6 +257,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           SearchModeToggle(
             mode: searchMode,
             onChanged: (mode) {
+              ref.read(searchControllerProvider.notifier).cancelDebounce();
               ref.read(searchModeProvider.notifier).state = mode;
               final query = ref.read(searchQueryProvider);
               if (query.isNotEmpty) {

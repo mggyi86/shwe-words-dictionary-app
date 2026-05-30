@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:shwewords/core/utils/fts_query_sanitizer.dart';
 import 'package:shwewords/data/database/app_database.dart';
 import 'package:shwewords/data/database/search_queries.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
@@ -91,6 +92,32 @@ void main() {
         limit: 10,
       );
       expect(page.results, isA<List<SearchResult>>());
+    }, skip: !sourceDb.existsSync() ? 'dictionary.db not found' : false);
+
+    test('synonym search excludes substring false positives', () async {
+      if (!sourceDb.existsSync()) return;
+
+      final page = await queries.search(
+        query: 'happy',
+        mode: SearchMode.synonym,
+        limit: 20,
+      );
+
+      expect(page.results, isNotEmpty);
+      expect(
+        page.results.any((r) => r.word == 'unhappy'),
+        isFalse,
+        reason: '"happy" must not match "unhappy" via substring',
+      );
+      for (final result in page.results) {
+        expect(
+          FtsQuerySanitizer.entrySynonymsMatchPrefix(
+            result.entry.synonyms,
+            'happy',
+          ),
+          isTrue,
+        );
+      }
     }, skip: !sourceDb.existsSync() ? 'dictionary.db not found' : false);
   });
 }

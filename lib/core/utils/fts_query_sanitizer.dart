@@ -42,4 +42,30 @@ class FtsQuerySanitizer {
     final escaped = normalized.replaceAll('"', '""');
     return '$column:"$escaped"';
   }
+
+  /// True when [synonym] starts with [query] (trigram FTS can match substrings).
+  static bool synonymMatchesPrefix(String synonym, String query) {
+    final q = query.trim().toLowerCase();
+    if (q.isEmpty) return false;
+
+    final normalized = synonym.trim().toLowerCase();
+    if (normalized.isEmpty) return false;
+
+    return normalized.startsWith(q);
+  }
+
+  /// True when any synonym on the entry starts with [query].
+  static bool entrySynonymsMatchPrefix(Iterable<String> synonyms, String query) {
+    for (final synonym in synonyms) {
+      if (synonymMatchesPrefix(synonym, query)) return true;
+    }
+    return false;
+  }
+
+  /// Synonyms on [synonyms] that start with [query], in list order.
+  static List<String> matchingSynonyms(Iterable<String> synonyms, String query) {
+    return synonyms
+        .where((synonym) => synonymMatchesPrefix(synonym, query))
+        .toList();
+  }
 }

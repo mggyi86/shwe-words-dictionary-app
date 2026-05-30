@@ -35,6 +35,22 @@ void main() {
         'word:"hello"',
       );
     });
+
+    test('synonymMatchesPrefix matches phrase start only', () {
+      expect(FtsQuerySanitizer.synonymMatchesPrefix('happy', 'hap'), isTrue);
+      expect(FtsQuerySanitizer.synonymMatchesPrefix('happy chance', 'happy'), isTrue);
+      expect(FtsQuerySanitizer.synonymMatchesPrefix('unhappy', 'happy'), isFalse);
+      expect(FtsQuerySanitizer.synonymMatchesPrefix('make happy', 'happy'), isFalse);
+      expect(FtsQuerySanitizer.synonymMatchesPrefix('trigger-happy', 'happy'), isFalse);
+    });
+
+    test('matchingSynonyms returns prefix matches in order', () {
+      final synonyms = ['unhappy', 'happy', 'happy chance', 'make happy'];
+      expect(
+        FtsQuerySanitizer.matchingSynonyms(synonyms, 'happy'),
+        ['happy', 'happy chance'],
+      );
+    });
   });
 
   group('MyanmarText', () {

@@ -146,10 +146,31 @@ class SearchQueries {
       return SearchPage(results: [], hasMore: false, offset: offset);
     }
 
-    return _ftsSearch(
+    // Trigram FTS can match substrings (e.g. "happy" inside "unhappy"); filter
+    // to synonym phrases that actually start with the query.
+    const overFetchFactor = 4;
+    final page = await _ftsSearch(
       matchQuery: matchQuery,
       language: language,
-      limit: limit,
+      limit: limit * overFetchFactor,
+      offset: offset,
+    );
+
+    final matching = page.results
+        .where(
+          (result) => FtsQuerySanitizer.entrySynonymsMatchPrefix(
+            result.entry.synonyms,
+            query,
+          ),
+        )
+        .toList();
+
+    final results = matching.take(limit).toList();
+    final hasMore = page.hasMore || matching.length > limit;
+
+    return SearchPage(
+      results: results,
+      hasMore: hasMore,
       offset: offset,
     );
   }

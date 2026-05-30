@@ -24,9 +24,14 @@ class SearchController extends AsyncNotifier<SearchPage> {
     return const SearchPage(results: [], hasMore: false, offset: 0);
   }
 
+  void cancelDebounce() {
+    _debounce?.cancel();
+    _debounce = null;
+  }
+
   void updateQuery(String query) {
     ref.read(searchQueryProvider.notifier).state = query;
-    _debounce?.cancel();
+    cancelDebounce();
     _debounce = Timer(
       const Duration(milliseconds: AppConfig.searchDebounceMs),
       () => search(query: query, offset: 0),
@@ -102,7 +107,7 @@ class SearchController extends AsyncNotifier<SearchPage> {
   }
 
   void clear() {
-    _debounce?.cancel();
+    cancelDebounce();
     ref.read(searchQueryProvider.notifier).state = '';
     state = const AsyncData(SearchPage(results: [], hasMore: false, offset: 0));
   }

@@ -4,6 +4,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shwewords/core/providers/pronunciation_provider.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
 import 'package:shwewords/core/theme/app_theme.dart';
+import 'package:shwewords/core/utils/fts_query_sanitizer.dart';
 import 'package:shwewords/core/utils/meaning_display.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
 import 'package:shwewords/domain/entities/search_result.dart';
@@ -25,6 +26,12 @@ class SearchResultTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final entry = result.entry;
+    final searchMode = ref.watch(searchModeProvider);
+    final searchQuery = ref.watch(searchQueryProvider);
+    final isSynonymMode = searchMode == SearchMode.synonym;
+    final matchedSynonyms = isSynonymMode
+        ? FtsQuerySanitizer.matchingSynonyms(entry.synonyms, searchQuery)
+        : const <String>[];
     final sections = MeaningDisplay.cardSectionsFromEntry(entry);
     final myanmarStyle = Theme.of(context).extension<MyanmarTypography>();
     final posColor = isDark ? Colors.grey[400]! : Colors.black54;
@@ -70,10 +77,9 @@ class SearchResultTile extends ConsumerWidget {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      for (var i = 0; i < sections.length; i++) ...[
-                        if (i > 0) const SizedBox(height: 10),
+                      if (isSynonymMode) ...[
                         Text(
-                          sections[i].pos,
+                          'thesaurus',
                           style: TextStyle(
                             color: posColor,
                             fontSize: 14,
@@ -81,27 +87,49 @@ class SearchResultTile extends ConsumerWidget {
                           ),
                         ),
                         const SizedBox(height: 4),
-                        for (final line in sections[i].lines)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 4),
-                            child: Text(
-                              line,
-                              style: myanmarStyle?.myanmar(
-                                    context,
+                        Text(
+                          matchedSynonyms.isNotEmpty
+                              ? matchedSynonyms.join(', ')
+                              : entry.synonyms.take(8).join(', '),
+                          style: TextStyle(
+                            color: definitionColor,
+                            fontSize: 15,
+                            height: 1.4,
+                          ),
+                        ),
+                      ] else
+                        for (var i = 0; i < sections.length; i++) ...[
+                          if (i > 0) const SizedBox(height: 10),
+                          Text(
+                            sections[i].pos,
+                            style: TextStyle(
+                              color: posColor,
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          for (final line in sections[i].lines)
+                            Padding(
+                              padding: const EdgeInsets.only(bottom: 4),
+                              child: Text(
+                                line,
+                                style: myanmarStyle?.myanmar(
+                                      context,
+                                      TextStyle(
+                                        color: definitionColor,
+                                        fontSize: 15,
+                                        height: 1.4,
+                                      ),
+                                    ) ??
                                     TextStyle(
                                       color: definitionColor,
                                       fontSize: 15,
                                       height: 1.4,
                                     ),
-                                  ) ??
-                                  TextStyle(
-                                    color: definitionColor,
-                                    fontSize: 15,
-                                    height: 1.4,
-                                  ),
+                              ),
                             ),
-                          ),
-                      ],
+                        ],
                     ],
                   ),
                 ),
