@@ -121,7 +121,7 @@ class DownloadRepositoryImpl implements DownloadRepository {
     await _local.copyBundledDatabase();
     _emit(const DownloadStatus.validating());
     await _local.openDatabase();
-    await _local.saveLocalDbVersion('dev-bundled');
+    await _local.saveLocalDbVersion('bundled');
     _emit(const DownloadStatus.ready());
   }
 

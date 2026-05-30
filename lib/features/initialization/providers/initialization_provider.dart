@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
@@ -26,11 +25,11 @@ class InitializationNotifier extends AsyncNotifier<InitializationState> {
     final exists = await dictRepo.databaseExists();
 
     if (!exists) {
-      if (kDebugMode && AppConfig.useBundledDatabaseInDebug) {
+      if (AppConfig.usesBundledDatabaseAtBuild) {
         await downloadRepo.copyBundledDatabase();
         final count = await dictRepo.getEntryCount();
         return InitializationState.ready(
-          dbVersion: 'dev-bundled',
+          dbVersion: 'bundled',
           entryCount: count,
         );
       }
@@ -44,9 +43,14 @@ class InitializationNotifier extends AsyncNotifier<InitializationState> {
       final version = await dictRepo.getLocalDbVersion() ?? 'unknown';
       final count = await dictRepo.getEntryCount();
 
-      final remoteMetadata = await downloadRepo.fetchRemoteMetadata();
-      if (await downloadRepo.needsDownload(remoteMetadata: remoteMetadata)) {
-        return InitializationState.needsDownload(remoteMetadata: remoteMetadata);
+      // Bundled builds ship the DB in the APK; skip remote update prompts.
+      if (!AppConfig.usesBundledDatabaseAtBuild) {
+        final remoteMetadata = await downloadRepo.fetchRemoteMetadata();
+        if (await downloadRepo.needsDownload(remoteMetadata: remoteMetadata)) {
+          return InitializationState.needsDownload(
+            remoteMetadata: remoteMetadata,
+          );
+        }
       }
 
       return InitializationState.ready(

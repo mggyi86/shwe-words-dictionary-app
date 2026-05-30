@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -106,16 +105,21 @@ class SettingsScreen extends ConsumerWidget {
                   error: (_, _) => const Text('Unknown'),
                 ),
               ),
-              ListTile(
-                title: const Text('Re-download dictionary'),
-                subtitle: const Text('Fetch latest database from GitHub Releases'),
-                trailing: const Icon(Icons.download),
-                onTap: () => _confirmRedownload(context, ref),
-              ),
-              if (kDebugMode && AppConfig.useBundledDatabaseInDebug)
+              if (AppConfig.downloadsDatabaseAfterInstall)
                 ListTile(
-                  title: const Text('Use bundled database'),
-                  subtitle: const Text('Debug: copy from app assets'),
+                  title: const Text('Re-download dictionary'),
+                  subtitle: const Text(
+                    'Fetch latest database from GitHub Releases',
+                  ),
+                  trailing: const Icon(Icons.download),
+                  onTap: () => _confirmRedownload(context, ref),
+                ),
+              if (AppConfig.usesBundledDatabaseAtBuild)
+                ListTile(
+                  title: const Text('Reinstall bundled database'),
+                  subtitle: Text(
+                    'Copy from ${AppConfig.bundledDatabaseAssetPath}',
+                  ),
                   onTap: () => ref
                       .read(downloadControllerProvider.notifier)
                       .useBundledDatabase(),

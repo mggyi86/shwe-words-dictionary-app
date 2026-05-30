@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -68,14 +67,14 @@ class DownloadScreen extends ConsumerWidget {
               icon: const Icon(Icons.download),
               label: const Text('Download Dictionary'),
             ),
-            if (kDebugMode && AppConfig.useBundledDatabaseInDebug) ...[
+            if (AppConfig.usesBundledDatabaseAtBuild) ...[
               const SizedBox(height: 12),
               OutlinedButton.icon(
                 onPressed: () => ref
                     .read(downloadControllerProvider.notifier)
                     .useBundledDatabase(),
                 icon: const Icon(Icons.storage),
-                label: const Text('Use Bundled Database (Debug)'),
+                label: const Text('Install from bundled database'),
               ),
             ],
             const SizedBox(height: 12),

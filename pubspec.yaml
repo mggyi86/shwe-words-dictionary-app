@@ -60,6 +60,8 @@ flutter:
   uses-material-design: true
   assets:
     - assets/dev/
+    # Bundled dictionary when AppConfig.dictionaryDatabaseSource is bundledAtBuild:
+    # - assets/data/dictionary.db.gz
     - assets/images/
   fonts:
     - family: Padauk

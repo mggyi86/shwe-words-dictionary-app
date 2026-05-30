@@ -35,11 +35,32 @@ flutter pub get
 dart run build_runner build --delete-conflicting-outputs
 ```
 
-### Local development (bundled database)
+### Dictionary source (`app_config.dart`)
 
-Debug builds copy the bundled database from `assets/dev/dictionary.db` on first launch.
+Set `dictionaryDatabaseSource` in [`lib/core/config/app_config.dart`](lib/core/config/app_config.dart):
 
-To refresh the bundled asset from the crawler:
+| Mode | Config | Behavior |
+|------|--------|----------|
+| Download after install | `DictionaryDatabaseSource.downloadAfterInstall` | First launch downloads `dictionary.db.gz` from `databaseDownloadUrl` |
+| Bundled at build | `DictionaryDatabaseSource.bundledAtBuild` | Ships `dictionary.db` or `dictionary.db.gz` in the app; extracted on first launch |
+
+**Download after install** (default) — set `metadataUrl` and `databaseDownloadUrl` to your hosted `metadata.json` and `dictionary.db.gz`.
+
+**Bundled at build** — copy the gzip file into assets and enable it in `pubspec.yaml`:
+
+```dart
+static const dictionaryDatabaseSource =
+    DictionaryDatabaseSource.bundledAtBuild;
+static const bundledDatabaseAssetPath = 'assets/data/dictionary.db.gz';
+```
+
+```bash
+mkdir -p assets/data
+cp dictionary.db.gz assets/data/dictionary.db.gz
+# Uncomment `- assets/data/dictionary.db.gz` under flutter: assets: in pubspec.yaml
+```
+
+For local dev with an uncompressed DB, use `assets/dev/dictionary.db` instead:
 
 ```bash
 cp ../dictionary_crawler/output/dictionary.db assets/dev/dictionary.db

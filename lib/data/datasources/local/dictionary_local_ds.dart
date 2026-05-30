@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:archive/archive.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -138,10 +139,16 @@ class DictionaryLocalDataSource {
     }
 
     final data = await rootBundle.load(AppConfig.bundledDatabaseAssetPath);
-    await target.writeAsBytes(
-      data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes),
-      flush: true,
-    );
+    final bytes =
+        data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
+
+    if (AppConfig.bundledDatabaseIsGzip) {
+      final decoded = GZipDecoder().decodeBytes(bytes);
+      if (target.existsSync()) await target.delete();
+      await target.writeAsBytes(decoded, flush: true);
+    } else {
+      await target.writeAsBytes(bytes, flush: true);
+    }
   }
 
   Future<void> deleteDatabase() async {
