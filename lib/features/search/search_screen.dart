@@ -50,7 +50,9 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchAsync = ref.watch(searchControllerProvider);
     final searchMode = ref.watch(searchModeProvider);
     final recentAsync = ref.watch(recentSearchesProvider);
-    final isWide = MediaQuery.sizeOf(context).width >= 840;
+    final view = View.of(context);
+    final screenWidth = view.physicalSize.width / view.devicePixelRatio;
+    final isWide = screenWidth >= 840;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
@@ -58,8 +60,18 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           isDark ? AppColors.darkScaffold : const Color(0xFFF4F7F4),
       body: SafeArea(
         child: isWide
-            ? _buildWideLayout(searchAsync, searchMode, recentAsync)
-            : _buildNarrowLayout(searchAsync, searchMode, recentAsync),
+            ? _buildWideLayout(
+                searchAsync,
+                searchMode,
+                recentAsync,
+                screenWidth,
+              )
+            : _buildNarrowLayout(
+                searchAsync,
+                searchMode,
+                recentAsync,
+                screenWidth,
+              ),
       ),
     );
   }
@@ -68,11 +80,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     AsyncValue<SearchPage> searchAsync,
     SearchMode searchMode,
     AsyncValue<List<String>> recentAsync,
+    double screenWidth,
   ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buildBrandedHeader(),
+        _buildBrandedHeader(screenWidth),
         _buildSearchHeader(searchMode),
         Expanded(child: _buildResults(searchAsync, recentAsync)),
       ],
@@ -83,6 +96,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     AsyncValue<SearchPage> searchAsync,
     SearchMode searchMode,
     AsyncValue<List<String>> recentAsync,
+    double screenWidth,
   ) {
     return Row(
       children: [
@@ -90,7 +104,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           width: 400,
           child: Column(
             children: [
-              _buildBrandedHeader(),
+              _buildBrandedHeader(screenWidth),
               _buildSearchHeader(searchMode),
               Expanded(child: _buildResults(searchAsync, recentAsync)),
             ],
@@ -115,7 +129,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildHeaderLogo() {
-    const size = 48.0;
+    const size = 48.0 * 1.15;
     final dpr = MediaQuery.devicePixelRatioOf(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
@@ -147,10 +161,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
-  Widget _buildBrandedHeader() {
+  Widget _buildBrandedHeader(double screenWidth) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleColor = isDark ? Colors.white : Colors.black87;
     final subtitleColor = isDark ? Colors.grey[400]! : Colors.grey[600]!;
+    final isCompact = screenWidth > 410;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
@@ -158,7 +173,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _buildHeaderLogo(),
-          const SizedBox(width: 12),
+          const SizedBox(width: 4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,24 +189,26 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                         color: titleColor,
                       ),
                     ),
-                    Text(
-                      ' English Myanmar',
-                      style: TextStyle(
-                        fontSize: 13,
-                        fontWeight: FontWeight.w400,
-                        color: subtitleColor,
+                    if (isCompact)
+                      Text(
+                        ' English Myanmar',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w400,
+                          color: subtitleColor,
+                        ),
                       ),
-                    ),
                   ],
                 ),
-                Text(
-                  'Dictionary',
-                  style: TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w400,
-                    color: subtitleColor,
+                if (isCompact)
+                  Text(
+                    'Dictionary',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w400,
+                      color: subtitleColor,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -423,7 +440,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return switch (mode) {
       SearchMode.english => 'Search English words...',
       SearchMode.myanmar => 'Search Myanmar meanings...',
-      SearchMode.synonym => 'Search synonyms...',
+      SearchMode.synonym => 'Search Synonyms...',
     };
   }
 }
