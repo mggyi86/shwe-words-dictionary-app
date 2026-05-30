@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:shwewords/core/providers/pronunciation_provider.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
+import 'package:shwewords/core/theme/app_colors.dart';
 import 'package:shwewords/core/theme/app_theme.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
 import 'package:shwewords/features/search/providers/search_provider.dart';
@@ -60,7 +61,7 @@ class _WordDetailContent extends ConsumerWidget {
           IconButton(
             icon: Icon(
               isFavorite ? Icons.star : Icons.star_border,
-              color: isFavorite ? Colors.amber : null,
+              color: isFavorite ? AppColors.gold : null,
             ),
             tooltip: 'Favorite',
             onPressed: () async {

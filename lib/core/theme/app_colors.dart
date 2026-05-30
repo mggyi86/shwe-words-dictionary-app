@@ -55,8 +55,7 @@ class AppColors {
   static Color goldBorderCard(Brightness brightness) =>
       gold.withValues(alpha: 0.4);
 
-  static Color goldIcon(Brightness brightness, {double alpha = 0.8}) =>
-      gold.withValues(alpha: alpha);
+  static Color goldIcon(Brightness brightness) => gold;
 
   static Color inactiveTabForeground(Brightness brightness) =>
       brightness == Brightness.dark ? grey400 : lightMutedText;

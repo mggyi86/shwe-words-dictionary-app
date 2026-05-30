@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:shwewords/core/router/app_router.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
+import 'package:shwewords/core/theme/app_colors.dart';
 import 'package:shwewords/core/theme/app_theme.dart';
 import 'package:shwewords/features/search/providers/search_provider.dart';
 
@@ -107,7 +108,7 @@ class _FavoritesTab extends ConsumerWidget {
           itemBuilder: (context, index) {
             final entry = favorites[index];
             return ListTile(
-              leading: const Icon(Icons.star, color: Colors.amber),
+              leading: const Icon(Icons.star, color: AppColors.gold),
               title: Text(entry.word),
               subtitle: Text(
                 entry.primaryMeaning,

@@ -97,8 +97,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         ),
         VerticalDivider(
           width: 1,
-          color: AppColors.goldBorder(Theme.of(context).brightness)
-              .withValues(alpha: 0.35),
+          color: AppColors.gold.withValues(alpha: 0.35),
         ),
         Expanded(
           child: Center(
@@ -118,8 +117,6 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleColor = isDark ? Colors.white : Colors.black87;
     final subtitleColor = isDark ? Colors.grey[400]! : Colors.black54;
-    final iconColor =
-        isDark ? const Color(0xFFD4AF37) : Colors.black87;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
@@ -170,14 +167,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           const OfflineIndicator(),
           IconButton(
             icon: const Icon(Icons.history_rounded),
-            color: iconColor,
+            color: const Color(0xFFD4AF37),
             tooltip: 'History & Favorites',
             onPressed: () => context.push(AppRoutes.history),
           ),
           const SizedBox(width: 16),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            color: iconColor,
+            color: const Color(0xFFD4AF37),
             tooltip: 'Settings',
             onPressed: () => context.push(AppRoutes.settings),
           ),
@@ -203,7 +200,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               borderRadius: BorderRadius.circular(12),
               border: isDark
                   ? Border.all(
-                      color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
+                      color: AppColors.gold.withValues(alpha: 0.3),
                     )
                   : null,
               boxShadow: isDark
@@ -277,7 +274,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return searchAsync.when(
       loading: () => Center(
         child: CircularProgressIndicator(
-          color: AppColors.goldBorder(Theme.of(context).brightness),
+          color: AppColors.gold,
         ),
       ),
       error: (e, _) => Center(child: Text('Search error: $e')),
@@ -295,7 +292,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 padding: const EdgeInsets.all(16),
                 child: Center(
                   child: CircularProgressIndicator(
-                    color: AppColors.goldBorder(Theme.of(context).brightness),
+                    color: AppColors.gold,
                   ),
                 ),
               );
@@ -361,7 +358,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 return ActionChip(
                   label: Text(term),
                   side: BorderSide(
-                    color: AppColors.goldBorder(Theme.of(context).brightness),
+                    color: AppColors.gold,
                   ),
                   onPressed: () {
                     _controller.text = term;

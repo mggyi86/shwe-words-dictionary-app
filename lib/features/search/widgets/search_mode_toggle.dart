@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shwewords/core/theme/app_colors.dart';
 import 'package:shwewords/domain/entities/search_result.dart';
 
 class SearchModeToggle extends StatelessWidget {
@@ -27,7 +28,7 @@ class SearchModeToggle extends StatelessWidget {
         borderRadius: BorderRadius.circular(_outerRadius),
         border: Border.all(
           color: isDark
-              ? const Color(0xFFD4AF37).withValues(alpha: 0.3)
+              ? AppColors.gold.withValues(alpha: 0.3)
               : Colors.grey.shade300,
         ),
       ),

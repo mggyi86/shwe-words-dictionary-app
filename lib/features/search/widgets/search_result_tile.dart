@@ -19,7 +19,6 @@ class SearchResultTile extends ConsumerWidget {
   final SearchResult result;
   final VoidCallback onTap;
 
-  static const _gold = Color(0xFFD4AF37);
   static const _cardBackground = Color(0xFF1C1C20);
 
   @override
@@ -32,11 +31,9 @@ class SearchResultTile extends ConsumerWidget {
         lines.englishLine != null && lines.englishLine!.isNotEmpty;
     final hasMyanmar =
         lines.myanmarLine != null && lines.myanmarLine!.isNotEmpty;
-    final headwordColor = isDark ? _gold : Colors.black87;
     final posColor = isDark ? Colors.grey[400]! : Colors.black54;
     final englishDefinitionColor = isDark ? Colors.white : Colors.black87;
     final myanmarDefinitionColor = isDark ? Colors.grey[200]! : Colors.black87;
-    final iconColor = isDark ? _gold : Colors.black54;
 
     final isFavAsync = ref.watch(
       favoriteStatusProvider((word: entry.word, language: entry.language)),
@@ -56,10 +53,8 @@ class SearchResultTile extends ConsumerWidget {
               color: isDark ? _cardBackground : Colors.white,
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: isDark
-                    ? _gold.withValues(alpha: 0.4)
-                    : Colors.grey.shade300,
-                width: 1.0,
+                color: const Color(0xFFD4AF37).withValues(alpha: 0.4),
+                width: 1.2,
               ),
             ),
             child: Row(
@@ -72,10 +67,11 @@ class SearchResultTile extends ConsumerWidget {
                     children: [
                       Text(
                         result.word,
-                        style: TextStyle(
-                          color: headwordColor,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                        style: const TextStyle(
+                          color: Color(0xFFD4AF37),
+                          fontSize: 19,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.3,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -140,11 +136,11 @@ class SearchResultTile extends ConsumerWidget {
                 Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    _ActionIcon(
+                    _CardActionIcon(
                       icon: isFavorite
                           ? Icons.star_rounded
                           : Icons.star_border_rounded,
-                      color: iconColor,
+                      size: 24,
                       tooltip: 'Favorite',
                       onPressed: () async {
                         await ref
@@ -159,9 +155,9 @@ class SearchResultTile extends ConsumerWidget {
                       },
                     ),
                     const SizedBox(height: 24),
-                    _ActionIcon(
+                    _CardActionIcon(
                       icon: Icons.volume_up_rounded,
-                      color: iconColor,
+                      size: 24,
                       tooltip: 'Pronunciation',
                       onPressed: () => pronounceWord(
                         ref,
@@ -171,9 +167,9 @@ class SearchResultTile extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    _ActionIcon(
+                    _CardActionIcon(
                       icon: Icons.share_outlined,
-                      color: iconColor,
+                      size: 22,
                       tooltip: 'Share',
                       onPressed: () => Share.share(
                         _formatEntryText(entry),
@@ -203,16 +199,16 @@ class SearchResultTile extends ConsumerWidget {
   }
 }
 
-class _ActionIcon extends StatelessWidget {
-  const _ActionIcon({
+class _CardActionIcon extends StatelessWidget {
+  const _CardActionIcon({
     required this.icon,
-    required this.color,
+    required this.size,
     required this.onPressed,
     required this.tooltip,
   });
 
   final IconData icon;
-  final Color color;
+  final double size;
   final VoidCallback onPressed;
   final String tooltip;
 
@@ -224,13 +220,10 @@ class _ActionIcon extends StatelessWidget {
       child: InkWell(
         onTap: onPressed,
         borderRadius: BorderRadius.circular(20),
-        child: Padding(
-          padding: const EdgeInsets.all(4),
-          child: Icon(
-            icon,
-            size: 22,
-            color: color,
-          ),
+        child: Icon(
+          icon,
+          color: const Color(0xFFD4AF37),
+          size: size,
         ),
       ),
     );

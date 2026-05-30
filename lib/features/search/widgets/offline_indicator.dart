@@ -30,7 +30,7 @@ class OfflineIndicator extends ConsumerWidget {
         child: Icon(
           Icons.cloud_off_outlined,
           size: 20,
-          color: AppColors.goldBorder(Theme.of(context).brightness),
+          color: AppColors.gold,
         ),
       ),
     );
