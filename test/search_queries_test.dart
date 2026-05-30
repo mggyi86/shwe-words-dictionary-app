@@ -70,6 +70,18 @@ void main() {
       );
     }, skip: !sourceDb.existsSync() ? 'dictionary.db not found' : false);
 
+    test('lookupEntryIds returns ids for known words only', () async {
+      if (!sourceDb.existsSync()) return;
+
+      final ids = await queries.lookupEntryIds(
+        ['water', 'bring', 'not-a-real-word-xyz'],
+      );
+
+      expect(ids['water'], isNotNull);
+      expect(ids['bring'], isNotNull);
+      expect(ids.containsKey('not-a-real-word-xyz'), isFalse);
+    }, skip: !sourceDb.existsSync() ? 'dictionary.db not found' : false);
+
     test('myanmar search executes without error', () async {
       if (!sourceDb.existsSync()) return;
 

@@ -29,6 +29,49 @@ class EntryCardSection {
   final List<String> lines;
 }
 
+/// Visual style for a meaning line on the word detail page.
+enum DetailLineKind {
+  gloss,
+  translation,
+  domain,
+  conjugation,
+}
+
+/// A single meaning line in a detail section.
+class DetailMeaningLine {
+  const DetailMeaningLine({
+    required this.text,
+    required this.kind,
+    this.domainLabel,
+  });
+
+  final String text;
+  final DetailLineKind kind;
+  final String? domainLabel;
+}
+
+/// One sense block (meanings + examples) within a part of speech.
+class DetailBlock {
+  const DetailBlock({
+    required this.meanings,
+    required this.examples,
+  });
+
+  final List<DetailMeaningLine> meanings;
+  final List<String> examples;
+}
+
+/// Full part-of-speech section for the word detail page.
+class DetailSection {
+  const DetailSection({
+    required this.pos,
+    required this.blocks,
+  });
+
+  final String pos;
+  final List<DetailBlock> blocks;
+}
+
 /// Splits gloss-style meanings into English and Myanmar display lines.
 class MeaningDisplay {
   MeaningDisplay._();
@@ -69,6 +112,28 @@ class MeaningDisplay {
   };
 
   static const _cardPosOrder = ['noun', 'verb'];
+
+  static const _detailPosOrder = [
+    'noun',
+    'verb',
+    'adjective',
+    'adverb',
+    'preposition',
+    'conjunction',
+    'interjection',
+    'pronoun',
+    'determiner',
+  ];
+
+  static final _domainPrefix = RegExp(
+    r'^(mathematics|grammar|formal|dated|sing|plural|usu|esp|espBrit|esp Brit|often|usually|British|US)\b',
+    caseSensitive: false,
+  );
+
+  static final _conjugationHint = RegExp(
+    r'\(\d+(?:st|nd|rd|th) person\)|past tense|present participle|past participle',
+    caseSensitive: false,
+  );
 
   /// Format a single meaning line for card preview.
   static String formatCardLine(String raw, String pos) {
@@ -150,5 +215,87 @@ class MeaningDisplay {
       englishLine: englishLine,
       myanmarLine: parsed.myanmar,
     );
+  }
+
+  /// Build full detail sections grouped by part of speech.
+  static List<DetailSection> detailSectionsFromEntry(DictionaryEntry entry) {
+    if (entry.definitions.isEmpty) return const [];
+
+    final orderedPos = <String>[];
+    final blocksByPos = <String, List<DetailBlock>>{};
+
+    for (final def in entry.definitions) {
+      final pos = def.pos?.trim().toLowerCase() ?? '';
+      if (pos.isEmpty) continue;
+
+      if (!blocksByPos.containsKey(pos)) {
+        orderedPos.add(pos);
+        blocksByPos[pos] = [];
+      }
+
+      final meanings = def.meanings
+          .map((raw) => toDetailMeaningLine(raw, pos))
+          .where((line) => line.text.isNotEmpty)
+          .toList();
+
+      if (meanings.isEmpty && def.examples.isEmpty) continue;
+
+      blocksByPos[pos]!.add(
+        DetailBlock(
+          meanings: meanings,
+          examples: List<String>.from(def.examples),
+        ),
+      );
+    }
+
+    orderedPos.sort(_comparePos);
+
+    return orderedPos
+        .map((pos) => DetailSection(pos: pos, blocks: blocksByPos[pos]!))
+        .toList();
+  }
+
+  /// Classify and normalize a raw meaning string for detail display.
+  static DetailMeaningLine toDetailMeaningLine(String raw, String pos) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) {
+      return const DetailMeaningLine(
+        text: '',
+        kind: DetailLineKind.translation,
+      );
+    }
+
+    if (trimmed.startsWith('~')) {
+      return DetailMeaningLine(text: trimmed, kind: DetailLineKind.gloss);
+    }
+
+    if (_conjugationHint.hasMatch(trimmed)) {
+      return DetailMeaningLine(
+        text: trimmed.startsWith('-') ? trimmed : '- $trimmed',
+        kind: DetailLineKind.conjugation,
+      );
+    }
+
+    final domainMatch = _domainPrefix.firstMatch(trimmed);
+    if (domainMatch != null) {
+      final label = domainMatch.group(1)!;
+      final rest = trimmed.substring(domainMatch.end).trim();
+      return DetailMeaningLine(
+        text: rest.isEmpty ? trimmed : rest,
+        kind: DetailLineKind.domain,
+        domainLabel: label,
+      );
+    }
+
+    return DetailMeaningLine(text: trimmed, kind: DetailLineKind.translation);
+  }
+
+  static int _comparePos(String a, String b) {
+    final ai = _detailPosOrder.indexOf(a);
+    final bi = _detailPosOrder.indexOf(b);
+    if (ai != -1 && bi != -1) return ai.compareTo(bi);
+    if (ai != -1) return -1;
+    if (bi != -1) return 1;
+    return a.compareTo(b);
   }
 }

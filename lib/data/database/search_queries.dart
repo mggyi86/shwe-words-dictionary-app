@@ -52,6 +52,37 @@ class SearchQueries {
     };
   }
 
+  Future<Map<String, int>> lookupEntryIds(
+    Iterable<String> words, {
+    String language = 'en',
+  }) async {
+    final unique = words
+        .map((word) => word.trim())
+        .where((word) => word.isNotEmpty)
+        .toSet()
+        .toList();
+    if (unique.isEmpty) return const {};
+
+    final placeholders = List.filled(unique.length, '?').join(', ');
+    final rows = await _db.customSelect(
+      '''
+      SELECT id, word
+      FROM entries
+      WHERE language = ?
+        AND word IN ($placeholders)
+      ''',
+      variables: [
+        Variable.withString(language),
+        ...unique.map(Variable.withString),
+      ],
+    ).get();
+
+    return {
+      for (final row in rows)
+        row.read<String>('word'): row.read<int>('id'),
+    };
+  }
+
   Future<DictionaryEntry?> getEntryById(int id) async {
     final rows = await _db.customSelect(
       'SELECT data FROM entries WHERE id = ? LIMIT 1',

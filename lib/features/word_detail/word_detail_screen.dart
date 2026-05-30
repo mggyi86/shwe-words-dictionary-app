@@ -5,9 +5,10 @@ import 'package:share_plus/share_plus.dart';
 import 'package:shwewords/core/providers/pronunciation_provider.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
 import 'package:shwewords/core/theme/app_colors.dart';
-import 'package:shwewords/core/theme/app_theme.dart';
+import 'package:shwewords/core/utils/meaning_display.dart';
 import 'package:shwewords/domain/entities/dictionary_entry.dart';
 import 'package:shwewords/features/search/providers/search_provider.dart';
+import 'package:shwewords/features/word_detail/widgets/entry_detail_body.dart';
 
 class WordDetailScreen extends ConsumerWidget {
   const WordDetailScreen({super.key, required this.entryId});
@@ -86,7 +87,7 @@ class _WordDetailContent extends ConsumerWidget {
           ),
         ],
       ),
-      body: _EntryBody(entry: entry),
+      body: EntryDetailBody(entry: entry),
     );
   }
 
@@ -104,20 +105,32 @@ class _WordDetailContent extends ConsumerWidget {
 
   String _formatEntryText(DictionaryEntry entry) {
     final buffer = StringBuffer('${entry.word}\n\n');
-    for (final def in entry.definitions) {
-      if (def.pos != null) buffer.writeln('[${def.pos}]');
-      for (final m in def.meanings) {
-        buffer.writeln('• $m');
-      }
-      for (final ex in def.examples) {
-        buffer.writeln('  "$ex"');
+    final sections = MeaningDisplay.detailSectionsFromEntry(entry);
+
+    for (final section in sections) {
+      buffer.writeln(section.pos);
+      for (final block in section.blocks) {
+        for (final line in block.meanings) {
+          if (line.kind == DetailLineKind.domain && line.domainLabel != null) {
+            buffer.writeln('(${line.domainLabel}) ${line.text}');
+          } else {
+            buffer.writeln(line.text);
+          }
+        }
+        for (final example in block.examples) {
+          buffer.writeln('  "$example"');
+        }
       }
       buffer.writeln();
     }
+
     if (entry.synonyms.isNotEmpty) {
-      buffer.writeln('Synonyms: ${entry.synonyms.join(', ')}');
+      buffer.writeln('thesaurus');
+      buffer.writeln('~ ${entry.synonyms.length} words related to ${entry.word}.');
+      buffer.writeln(entry.synonyms.join(', '));
     }
-    return buffer.toString();
+
+    return buffer.toString().trim();
   }
 }
 
@@ -126,94 +139,3 @@ final _entryProvider = FutureProvider.family<DictionaryEntry, int>((ref, id) asy
   if (entry == null) throw Exception('Entry not found');
   return entry;
 });
-
-class _EntryBody extends StatelessWidget {
-  const _EntryBody({required this.entry});
-
-  final DictionaryEntry entry;
-
-  @override
-  Widget build(BuildContext context) {
-    final myanmarStyle = Theme.of(context).extension<MyanmarTypography>();
-
-    return ListView(
-      padding: const EdgeInsets.all(20),
-      children: [
-        Text(
-          entry.word,
-          style: Theme.of(context).textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          entry.language.toUpperCase(),
-          style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
-        ),
-        const SizedBox(height: 24),
-        ...entry.definitions.map((def) {
-          return Padding(
-            padding: const EdgeInsets.only(bottom: 20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (def.pos != null)
-                  Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.secondaryContainer,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Text(
-                      def.pos!,
-                      style: Theme.of(context).textTheme.labelMedium,
-                    ),
-                  ),
-                const SizedBox(height: 8),
-                ...def.meanings.map(
-                  (m) => Padding(
-                    padding: const EdgeInsets.only(bottom: 6),
-                    child: SelectableText(
-                      m,
-                      style: myanmarStyle?.myanmar(
-                            context,
-                            Theme.of(context).textTheme.titleLarge!,
-                          ) ??
-                          Theme.of(context).textTheme.titleLarge,
-                    ),
-                  ),
-                ),
-                ...def.examples.map(
-                  (ex) => Padding(
-                    padding: const EdgeInsets.only(top: 4, left: 8),
-                    child: SelectableText(
-                      '"$ex"',
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                            fontStyle: FontStyle.italic,
-                            color: Theme.of(context)
-                                .colorScheme
-                                .onSurfaceVariant,
-                          ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-        if (entry.synonyms.isNotEmpty) ...[
-          Text('Synonyms', style: Theme.of(context).textTheme.titleMedium),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: entry.synonyms.map((s) => Chip(label: Text(s))).toList(),
-          ),
-        ],
-      ],
-    );
-  }
-}

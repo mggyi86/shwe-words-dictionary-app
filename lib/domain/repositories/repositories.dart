@@ -15,6 +15,10 @@ abstract class DictionaryRepository {
 
 abstract class SearchRepository {
   Future<DictionaryEntry?> exactLookup(String word, {String language = 'en'});
+  Future<Map<String, int>> lookupEntryIds(
+    Iterable<String> words, {
+    String language = 'en',
+  });
   Future<SearchPage> search(
     String query, {
     required SearchMode searchMode,

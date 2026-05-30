@@ -17,6 +17,14 @@ class SearchRepositoryImpl implements SearchRepository {
   }
 
   @override
+  Future<Map<String, int>> lookupEntryIds(
+    Iterable<String> words, {
+    String language = 'en',
+  }) {
+    return _local.searchQueries.lookupEntryIds(words, language: language);
+  }
+
+  @override
   Future<SearchPage> search(
     String query, {
     required SearchMode searchMode,
