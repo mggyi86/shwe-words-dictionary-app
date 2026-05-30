@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shwewords/core/theme/app_colors.dart';
+import 'package:shwewords/core/theme/myanmar_font_choice.dart';
 
 class AppTheme {
   AppTheme._();
@@ -15,7 +16,10 @@ class AppTheme {
     return GoogleFonts.interTextTheme(base);
   }
 
-  static ThemeData light({double myanmarFontScale = 1.2}) {
+  static ThemeData light({
+    double myanmarFontScale = 1.0,
+    MyanmarFontChoice myanmarFont = MyanmarFontChoice.roboto,
+  }) {
     const brightness = Brightness.light;
     final colorScheme = ColorScheme(
       brightness: brightness,
@@ -80,12 +84,18 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       extensions: [
-        MyanmarTypography(myanmarFontScale: myanmarFontScale),
+        MyanmarTypography(
+          myanmarFontScale: myanmarFontScale,
+          myanmarFont: myanmarFont,
+        ),
       ],
     );
   }
 
-  static ThemeData dark({double myanmarFontScale = 1.2}) {
+  static ThemeData dark({
+    double myanmarFontScale = 1.0,
+    MyanmarFontChoice myanmarFont = MyanmarFontChoice.roboto,
+  }) {
     const brightness = Brightness.dark;
     final colorScheme = ColorScheme(
       brightness: brightness,
@@ -150,37 +160,49 @@ class AppTheme {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       extensions: [
-        MyanmarTypography(myanmarFontScale: myanmarFontScale),
+        MyanmarTypography(
+          myanmarFontScale: myanmarFontScale,
+          myanmarFont: myanmarFont,
+        ),
       ],
     );
   }
 }
 
 class MyanmarTypography extends ThemeExtension<MyanmarTypography> {
-  const MyanmarTypography({this.myanmarFontScale = 1.2});
+  const MyanmarTypography({
+    this.myanmarFontScale = 1.0,
+    this.myanmarFont = MyanmarFontChoice.roboto,
+  });
 
   final double myanmarFontScale;
+  final MyanmarFontChoice myanmarFont;
 
   TextStyle myanmar(BuildContext context, TextStyle base) {
-    return base.copyWith(
-      fontFamily: 'Padauk',
+    final scaled = base.copyWith(
       fontSize: (base.fontSize ?? 16) * myanmarFontScale,
     );
+
+    return switch (myanmarFont) {
+      MyanmarFontChoice.padauk => scaled.copyWith(fontFamily: 'Padauk'),
+      MyanmarFontChoice.roboto => GoogleFonts.roboto(textStyle: scaled),
+    };
   }
 
   @override
-  MyanmarTypography copyWith({double? myanmarFontScale}) {
+  MyanmarTypography copyWith({
+    double? myanmarFontScale,
+    MyanmarFontChoice? myanmarFont,
+  }) {
     return MyanmarTypography(
       myanmarFontScale: myanmarFontScale ?? this.myanmarFontScale,
+      myanmarFont: myanmarFont ?? this.myanmarFont,
     );
   }
 
   @override
   MyanmarTypography lerp(MyanmarTypography? other, double t) {
     if (other == null) return this;
-    return MyanmarTypography(
-      myanmarFontScale:
-          myanmarFontScale + (other.myanmarFontScale - myanmarFontScale) * t,
-    );
+    return t < 0.5 ? this : other;
   }
 }

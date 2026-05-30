@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
+import 'package:shwewords/core/theme/myanmar_font_choice.dart';
 import 'package:shwewords/features/initialization/providers/initialization_provider.dart';
 import 'package:shwewords/features/settings/providers/settings_provider.dart';
 
@@ -46,6 +47,32 @@ class SettingsScreen extends ConsumerWidget {
                 value: settings.wifiOnlyDownload,
                 onChanged: (v) =>
                     ref.read(settingsProvider.notifier).setWifiOnly(v),
+              ),
+              const Divider(),
+              ListTile(
+                title: const Text('Myanmar font'),
+                subtitle: Text(settings.myanmarFont.label),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: SegmentedButton<MyanmarFontChoice>(
+                  segments: const [
+                    ButtonSegment(
+                      value: MyanmarFontChoice.padauk,
+                      label: Text('Padauk'),
+                    ),
+                    ButtonSegment(
+                      value: MyanmarFontChoice.roboto,
+                      label: Text('Roboto'),
+                    ),
+                  ],
+                  selected: {settings.myanmarFont},
+                  onSelectionChanged: (set) {
+                    ref
+                        .read(settingsProvider.notifier)
+                        .setMyanmarFont(set.first);
+                  },
+                ),
               ),
               ListTile(
                 title: const Text('Myanmar font size'),

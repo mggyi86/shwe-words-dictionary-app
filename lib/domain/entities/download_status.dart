@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:shwewords/core/theme/myanmar_font_choice.dart';
 import 'package:shwewords/domain/entities/dictionary_metadata.dart';
 
 part 'download_status.freezed.dart';
@@ -30,7 +31,8 @@ class DownloadStatus with _$DownloadStatus {
 class AppSettings with _$AppSettings {
   const factory AppSettings({
     @Default(false) bool wifiOnlyDownload,
-    @Default(1.2) double myanmarFontScale,
+    @Default(1.0) double myanmarFontScale,
+    @Default(MyanmarFontChoice.roboto) MyanmarFontChoice myanmarFont,
     @Default('en') String preferredLanguage,
   }) = _AppSettings;
 }

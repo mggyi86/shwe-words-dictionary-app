@@ -1181,6 +1181,7 @@ abstract class DownloadStatusFailed implements DownloadStatus {
 mixin _$AppSettings {
   bool get wifiOnlyDownload => throw _privateConstructorUsedError;
   double get myanmarFontScale => throw _privateConstructorUsedError;
+  MyanmarFontChoice get myanmarFont => throw _privateConstructorUsedError;
   String get preferredLanguage => throw _privateConstructorUsedError;
 
   /// Create a copy of AppSettings
@@ -1200,6 +1201,7 @@ abstract class $AppSettingsCopyWith<$Res> {
   $Res call({
     bool wifiOnlyDownload,
     double myanmarFontScale,
+    MyanmarFontChoice myanmarFont,
     String preferredLanguage,
   });
 }
@@ -1221,6 +1223,7 @@ class _$AppSettingsCopyWithImpl<$Res, $Val extends AppSettings>
   $Res call({
     Object? wifiOnlyDownload = null,
     Object? myanmarFontScale = null,
+    Object? myanmarFont = null,
     Object? preferredLanguage = null,
   }) {
     return _then(
@@ -1233,6 +1236,10 @@ class _$AppSettingsCopyWithImpl<$Res, $Val extends AppSettings>
                 ? _value.myanmarFontScale
                 : myanmarFontScale // ignore: cast_nullable_to_non_nullable
                       as double,
+            myanmarFont: null == myanmarFont
+                ? _value.myanmarFont
+                : myanmarFont // ignore: cast_nullable_to_non_nullable
+                      as MyanmarFontChoice,
             preferredLanguage: null == preferredLanguage
                 ? _value.preferredLanguage
                 : preferredLanguage // ignore: cast_nullable_to_non_nullable
@@ -1255,6 +1262,7 @@ abstract class _$$AppSettingsImplCopyWith<$Res>
   $Res call({
     bool wifiOnlyDownload,
     double myanmarFontScale,
+    MyanmarFontChoice myanmarFont,
     String preferredLanguage,
   });
 }
@@ -1275,6 +1283,7 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
   $Res call({
     Object? wifiOnlyDownload = null,
     Object? myanmarFontScale = null,
+    Object? myanmarFont = null,
     Object? preferredLanguage = null,
   }) {
     return _then(
@@ -1287,6 +1296,10 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
             ? _value.myanmarFontScale
             : myanmarFontScale // ignore: cast_nullable_to_non_nullable
                   as double,
+        myanmarFont: null == myanmarFont
+            ? _value.myanmarFont
+            : myanmarFont // ignore: cast_nullable_to_non_nullable
+                  as MyanmarFontChoice,
         preferredLanguage: null == preferredLanguage
             ? _value.preferredLanguage
             : preferredLanguage // ignore: cast_nullable_to_non_nullable
@@ -1301,7 +1314,8 @@ class __$$AppSettingsImplCopyWithImpl<$Res>
 class _$AppSettingsImpl implements _AppSettings {
   const _$AppSettingsImpl({
     this.wifiOnlyDownload = false,
-    this.myanmarFontScale = 1.2,
+    this.myanmarFontScale = 1.0,
+    this.myanmarFont = MyanmarFontChoice.roboto,
     this.preferredLanguage = 'en',
   });
 
@@ -1313,11 +1327,14 @@ class _$AppSettingsImpl implements _AppSettings {
   final double myanmarFontScale;
   @override
   @JsonKey()
+  final MyanmarFontChoice myanmarFont;
+  @override
+  @JsonKey()
   final String preferredLanguage;
 
   @override
   String toString() {
-    return 'AppSettings(wifiOnlyDownload: $wifiOnlyDownload, myanmarFontScale: $myanmarFontScale, preferredLanguage: $preferredLanguage)';
+    return 'AppSettings(wifiOnlyDownload: $wifiOnlyDownload, myanmarFontScale: $myanmarFontScale, myanmarFont: $myanmarFont, preferredLanguage: $preferredLanguage)';
   }
 
   @override
@@ -1329,6 +1346,8 @@ class _$AppSettingsImpl implements _AppSettings {
                 other.wifiOnlyDownload == wifiOnlyDownload) &&
             (identical(other.myanmarFontScale, myanmarFontScale) ||
                 other.myanmarFontScale == myanmarFontScale) &&
+            (identical(other.myanmarFont, myanmarFont) ||
+                other.myanmarFont == myanmarFont) &&
             (identical(other.preferredLanguage, preferredLanguage) ||
                 other.preferredLanguage == preferredLanguage));
   }
@@ -1338,6 +1357,7 @@ class _$AppSettingsImpl implements _AppSettings {
     runtimeType,
     wifiOnlyDownload,
     myanmarFontScale,
+    myanmarFont,
     preferredLanguage,
   );
 
@@ -1354,6 +1374,7 @@ abstract class _AppSettings implements AppSettings {
   const factory _AppSettings({
     final bool wifiOnlyDownload,
     final double myanmarFontScale,
+    final MyanmarFontChoice myanmarFont,
     final String preferredLanguage,
   }) = _$AppSettingsImpl;
 
@@ -1361,6 +1382,8 @@ abstract class _AppSettings implements AppSettings {
   bool get wifiOnlyDownload;
   @override
   double get myanmarFontScale;
+  @override
+  MyanmarFontChoice get myanmarFont;
   @override
   String get preferredLanguage;
 

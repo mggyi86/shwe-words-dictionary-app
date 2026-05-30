@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
+import 'package:shwewords/core/theme/myanmar_font_choice.dart';
 import 'package:shwewords/domain/entities/download_status.dart';
 
 final themeModeProvider = StateProvider<ThemeMode>((ref) => ThemeMode.dark);
@@ -29,6 +30,11 @@ class SettingsNotifier extends AsyncNotifier<AppSettings> {
   Future<void> setMyanmarFontScale(double value) async {
     final current = state.valueOrNull ?? const AppSettings();
     await updateSettings(current.copyWith(myanmarFontScale: value));
+  }
+
+  Future<void> setMyanmarFont(MyanmarFontChoice value) async {
+    final current = state.valueOrNull ?? const AppSettings();
+    await updateSettings(current.copyWith(myanmarFont: value));
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
