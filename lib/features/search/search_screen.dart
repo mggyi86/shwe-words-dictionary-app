@@ -121,7 +121,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           const AppLogo(
             variant: AppLogoVariant.icon,
@@ -132,6 +132,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
@@ -165,18 +166,23 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             ),
           ),
           const OfflineIndicator(),
-          IconButton(
-            icon: const Icon(Icons.history_rounded),
-            color: const Color(0xFFD4AF37),
-            tooltip: 'History & Favorites',
-            onPressed: () => context.push(AppRoutes.history),
-          ),
-          const SizedBox(width: 16),
-          IconButton(
-            icon: const Icon(Icons.settings_outlined),
-            color: const Color(0xFFD4AF37),
-            tooltip: 'Settings',
-            onPressed: () => context.push(AppRoutes.settings),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.history_rounded),
+                color: const Color(0xFFD4AF37),
+                tooltip: 'History & Favorites',
+                onPressed: () => context.push(AppRoutes.history),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.settings_outlined),
+                color: const Color(0xFFD4AF37),
+                tooltip: 'Settings',
+                onPressed: () => context.push(AppRoutes.settings),
+              ),
+            ],
           ),
         ],
       ),
