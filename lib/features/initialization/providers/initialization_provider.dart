@@ -64,8 +64,9 @@ class InitializationNotifier extends AsyncNotifier<InitializationState> {
   }
 }
 
-final downloadStatusProvider = StreamProvider<DownloadStatus>((ref) {
-  return ref.watch(downloadRepositoryProvider).statusStream;
+final downloadStatusProvider = StreamProvider<DownloadStatus>((ref) async* {
+  yield const DownloadStatus.idle();
+  yield* ref.watch(downloadRepositoryProvider).statusStream;
 });
 
 final downloadControllerProvider =

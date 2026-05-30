@@ -57,7 +57,7 @@ class DownloadScreen extends ConsumerWidget {
             const SizedBox(height: 32),
             downloadStatus.when(
               data: (status) => _StatusView(status: status),
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const SizedBox.shrink(),
               error: (e, _) => Text('Error: $e'),
             ),
             const Spacer(),
