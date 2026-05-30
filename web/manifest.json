@@ -3,7 +3,7 @@
     "short_name": "ShweWords",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#FFFFFF",
+    "background_color": "#000000",
     "theme_color": "#1B7A5E",
     "description": "English Myanmar Dictionary - ShweWords. Offline-first dictionary with FTS5 search.",
     "orientation": "portrait-primary",

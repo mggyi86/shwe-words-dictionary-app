@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 
 enum AppLogoVariant {
-  /// Full wide logo with app name and tagline.
+  /// Full logo with app name and tagline.
   full,
 
-  /// Square icon suitable for small spaces (app bar, favicon-style).
+  /// Square icon for app bar, favicon-style, and small spaces.
   icon,
 }
 
-/// Responsive ShweWords logo that scales cleanly at any size.
+/// Responsive ShweWords logo that scales cleanly at any size and density.
+///
+/// Uses high-resolution PNG assets; Flutter scales them per device pixel ratio.
 class AppLogo extends StatelessWidget {
   const AppLogo({
     super.key,
@@ -26,27 +28,45 @@ class AppLogo extends StatelessWidget {
   static const _fullAsset = 'assets/images/logo.png';
   static const _iconAsset = 'assets/images/app_icon.png';
 
+  /// Intrinsic aspect ratio of [logo.png] (width / height).
+  static const _logoAspectRatio = 472 / 481;
+
   @override
   Widget build(BuildContext context) {
-    final asset = variant == AppLogoVariant.full ? _fullAsset : _iconAsset;
-    final maxWidth = width ??
+    final mediaQuery = MediaQuery.of(context);
+    final dpr = mediaQuery.devicePixelRatio;
+
+    final displayWidth = width ??
         switch (variant) {
-          AppLogoVariant.full => MediaQuery.sizeOf(context).width * 0.75,
+          AppLogoVariant.full => mediaQuery.size.width * 0.75,
           AppLogoVariant.icon => 48.0,
         };
+
+    final displayHeight = height ??
+        switch (variant) {
+          AppLogoVariant.full => displayWidth / _logoAspectRatio,
+          AppLogoVariant.icon => displayWidth,
+        };
+
+    final asset = variant == AppLogoVariant.full ? _fullAsset : _iconAsset;
+    final cacheWidth = (displayWidth * dpr).round();
+    final cacheHeight = (displayHeight * dpr).round();
 
     return Semantics(
       label: semanticLabel,
       image: true,
       child: Image.asset(
         asset,
-        height: height,
-        width: width,
+        width: displayWidth,
+        height: displayHeight,
         fit: BoxFit.contain,
         filterQuality: FilterQuality.high,
+        gaplessPlayback: true,
+        cacheWidth: cacheWidth,
+        cacheHeight: cacheHeight,
         errorBuilder: (context, error, stackTrace) => Icon(
           Icons.menu_book_rounded,
-          size: height ?? maxWidth,
+          size: displayHeight,
           color: Theme.of(context).colorScheme.primary,
         ),
       ),

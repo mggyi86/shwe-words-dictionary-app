@@ -46,8 +46,9 @@ flutter_launcher_icons:
   ios: true
   image_path: AppIcons/appstore.png
   remove_alpha_ios: true
-  adaptive_icon_background: "#000000"
-  adaptive_icon_foreground: assets/images/app_icon.png
+  background_color_ios: "#000000"
+  adaptive_icon_background: "#00000000"
+  adaptive_icon_foreground: assets/images/app_icon_foreground.png
   web:
     generate: true
     image_path: AppIcons/appstore.png
