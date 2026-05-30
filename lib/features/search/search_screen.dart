@@ -6,7 +6,6 @@ import 'package:shwewords/core/router/app_router.dart';
 import 'package:shwewords/core/theme/app_colors.dart';
 import 'package:shwewords/core/theme/app_theme.dart';
 import 'package:shwewords/core/utils/myanmar_text.dart';
-import 'package:shwewords/core/widgets/app_logo.dart';
 import 'package:shwewords/domain/entities/search_result.dart';
 import 'package:shwewords/features/search/providers/search_provider.dart';
 import 'package:shwewords/features/search/widgets/offline_indicator.dart';
@@ -115,21 +114,47 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     );
   }
 
+  Widget _buildHeaderLogo() {
+    const size = 48.0;
+    final dpr = MediaQuery.devicePixelRatioOf(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(8),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.35),
+            blurRadius: 10,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(8),
+        child: Image.asset(
+          'assets/images/app_icon.png',
+          width: size,
+          height: size,
+          fit: BoxFit.contain,
+          filterQuality: FilterQuality.high,
+          cacheWidth: (size * dpr).round(),
+          cacheHeight: (size * dpr).round(),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBrandedHeader() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final titleColor = isDark ? Colors.white : Colors.black87;
-    final subtitleColor = isDark ? Colors.grey[400]! : Colors.black54;
+    final subtitleColor = isDark ? Colors.grey[400]! : Colors.grey[600]!;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          const AppLogo(
-            variant: AppLogoVariant.icon,
-            height: 36,
-            width: 36,
-          ),
+          _buildHeaderLogo(),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -141,7 +166,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     Text(
                       AppConfig.appShortName,
                       style: TextStyle(
-                        fontSize: 16,
+                        fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: titleColor,
                       ),
@@ -149,7 +174,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     Text(
                       ' English Myanmar',
                       style: TextStyle(
-                        fontSize: 14,
+                        fontSize: 13,
                         fontWeight: FontWeight.w400,
                         color: subtitleColor,
                       ),
@@ -159,7 +184,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                 Text(
                   'Dictionary',
                   style: TextStyle(
-                    fontSize: 14,
+                    fontSize: 13,
                     fontWeight: FontWeight.w400,
                     color: subtitleColor,
                   ),
