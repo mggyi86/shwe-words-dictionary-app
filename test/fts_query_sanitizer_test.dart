@@ -62,5 +62,12 @@ void main() {
     test('normalize trims and collapses whitespace', () {
       expect(MyanmarText.normalize('  hello   world  '), 'hello world');
     });
+
+    test('detectScript chooses Myanmar or Latin search mode', () {
+      expect(MyanmarText.detectScript('ရေ'), SearchScript.myanmar);
+      expect(MyanmarText.detectScript('water'), SearchScript.latin);
+      expect(MyanmarText.detectScript('  '), isNull);
+      expect(MyanmarText.detectScript('123'), isNull);
+    });
   });
 }

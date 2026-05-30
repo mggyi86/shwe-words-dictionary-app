@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/core/router/app_router.dart';
 import 'package:shwewords/core/theme/app_colors.dart';
+import 'package:shwewords/core/theme/app_theme.dart';
+import 'package:shwewords/core/utils/myanmar_text.dart';
 import 'package:shwewords/core/widgets/app_logo.dart';
 import 'package:shwewords/domain/entities/search_result.dart';
 import 'package:shwewords/features/search/providers/search_provider.dart';
@@ -194,6 +196,12 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchIconColor = isDark ? Colors.grey[400]! : Colors.black54;
     final hintColor = isDark ? Colors.grey[400]! : Colors.black54;
     final inputTextColor = isDark ? Colors.white : Colors.black87;
+    final query = ref.watch(searchQueryProvider);
+    final myanmarTypography = Theme.of(context).extension<MyanmarTypography>();
+    final baseFieldStyle = TextStyle(color: inputTextColor, fontSize: 16);
+    final fieldStyle = MyanmarText.containsMyanmar(query)
+        ? myanmarTypography?.myanmar(context, baseFieldStyle) ?? baseFieldStyle
+        : baseFieldStyle;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
@@ -222,7 +230,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
             child: TextField(
               controller: _controller,
               focusNode: _focusNode,
-              style: TextStyle(color: inputTextColor, fontSize: 16),
+              style: fieldStyle,
               decoration: InputDecoration(
                 isDense: true,
                 filled: false,

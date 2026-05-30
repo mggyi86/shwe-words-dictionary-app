@@ -3,9 +3,18 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shwewords/core/config/app_config.dart';
 import 'package:shwewords/core/providers/repository_providers.dart';
+import 'package:shwewords/core/utils/myanmar_text.dart';
 import 'package:shwewords/domain/entities/search_result.dart';
 
 final searchModeProvider = StateProvider<SearchMode>((ref) => SearchMode.english);
+
+SearchMode? searchModeFromScript(String query) {
+  return switch (MyanmarText.detectScript(query)) {
+    SearchScript.myanmar => SearchMode.myanmar,
+    SearchScript.latin => SearchMode.english,
+    null => null,
+  };
+}
 
 final searchQueryProvider = StateProvider<String>((ref) => '');
 
@@ -31,6 +40,10 @@ class SearchController extends AsyncNotifier<SearchPage> {
 
   void updateQuery(String query) {
     ref.read(searchQueryProvider.notifier).state = query;
+    final detected = searchModeFromScript(query);
+    if (detected != null) {
+      ref.read(searchModeProvider.notifier).state = detected;
+    }
     cancelDebounce();
     _debounce = Timer(
       const Duration(milliseconds: AppConfig.searchDebounceMs),
@@ -53,7 +66,14 @@ class SearchController extends AsyncNotifier<SearchPage> {
     state = const AsyncLoading();
 
     try {
+      if (modeOverride == null) {
+        final detected = searchModeFromScript(trimmed);
+        if (detected != null) {
+          ref.read(searchModeProvider.notifier).state = detected;
+        }
+      }
       final resolvedSearchMode = modeOverride ??
+          searchModeFromScript(trimmed) ??
           ref.read(searchModeProvider.notifier).state;
       final repo = ref.read(searchRepositoryProvider);
       final page = await repo.search(
