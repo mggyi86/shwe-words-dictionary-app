@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 
-/// ShweWords brand palette (light + dark) from product mockups.
+/// ShweWords brand palette aligned with [example.dart].
 class AppColors {
   AppColors._();
 
-  static const gold = Color(0xFFC4A35A);
-  static const goldDark = Color(0xFFD4B06A);
+  static const gold = Color(0xFFD4AF37);
 
   static const lightScaffold = Color(0xFFF5F5F0);
   static const lightCard = Color(0xFFFFFFFF);
@@ -13,16 +12,20 @@ class AppColors {
   static const lightMutedText = Color(0xFF6B6B65);
   static const lightTitle = Color(0xFF1A1A18);
 
-  static const darkScaffold = Color(0xFF1A1C20);
-  static const darkCard = Color(0xFF23262B);
-  static const darkSearchFill = Color(0xFF2A2D33);
-  static const darkMutedText = Color(0xFFB0B0AA);
-  static const darkTitle = Color(0xFFF2F2EE);
+  static const darkScaffold = Color(0xFF121214);
+  static const darkCard = Color(0xFF1C1C20);
+  static const darkSearchFill = Color(0xFF1C1C20);
+  static const darkTitle = Color(0xFFFFFFFF);
+
+  /// Material grey shades used in example.dart.
+  static const grey300 = Color(0xFFE0E0E0);
+  static const grey400 = Color(0xFFBDBDBD);
+  static const grey500 = Color(0xFF9E9E9E);
 
   static const englishTabActive = Color(0xFFD8EAD8);
   static const englishTabActiveText = Color(0xFF2A3D2A);
-  static const englishTabActiveDark = Color(0xFF2E3F32);
-  static const englishTabActiveTextDark = Color(0xFFB8D4B8);
+  static const englishTabActiveDark = Color(0xFF2A3A2A);
+  static const tabActiveGreen = Color(0xFF81C784);
 
   static const synonymTabActiveDark = Color(0xFF2A2620);
 
@@ -39,16 +42,36 @@ class AppColors {
       brightness == Brightness.dark ? darkTitle : lightTitle;
 
   static Color mutedText(Brightness brightness) =>
-      brightness == Brightness.dark ? darkMutedText : lightMutedText;
+      brightness == Brightness.dark ? grey400 : lightMutedText;
 
-  static Color goldBorder(Brightness brightness) =>
-      brightness == Brightness.dark ? goldDark : gold;
+  static Color secondaryText(Brightness brightness) =>
+      brightness == Brightness.dark ? grey300 : lightMutedText;
+
+  static Color goldBorder(Brightness brightness) => gold;
+
+  static Color goldBorderSubtle(Brightness brightness, {double alpha = 0.5}) =>
+      gold.withValues(alpha: alpha);
+
+  static Color goldBorderCard(Brightness brightness) =>
+      gold.withValues(alpha: 0.4);
+
+  static Color goldIcon(Brightness brightness, {double alpha = 0.8}) =>
+      gold.withValues(alpha: alpha);
+
+  static Color inactiveTabForeground(Brightness brightness) =>
+      brightness == Brightness.dark ? grey400 : lightMutedText;
+
+  static Color activeTabForeground(Brightness brightness) =>
+      brightness == Brightness.dark ? tabActiveGreen : englishTabActiveText;
+
+  static Color searchIcon(Brightness brightness) =>
+      brightness == Brightness.dark ? grey500 : lightMutedText;
 
   static List<BoxShadow> cardGlow(Brightness brightness) {
     if (brightness == Brightness.light) return const [];
     return [
       BoxShadow(
-        color: gold.withValues(alpha: 0.28),
+        color: gold.withValues(alpha: 0.4),
         blurRadius: 10,
         spreadRadius: 0,
       ),

@@ -61,3 +61,9 @@ flutter:
   assets:
     - assets/dev/
     - assets/images/
+  fonts:
+    - family: Padauk
+      fonts:
+        - asset: assets/fonts/Padauk-Regular.ttf
+        - asset: assets/fonts/Padauk-Bold.ttf
+          weight: 700

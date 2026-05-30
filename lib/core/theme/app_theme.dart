@@ -5,13 +5,14 @@ import 'package:shwewords/core/theme/app_colors.dart';
 class AppTheme {
   AppTheme._();
 
+  static const _inputRadius = 12.0;
+
   static TextTheme _buildTextTheme(Brightness brightness) {
     final base = brightness == Brightness.dark
         ? ThemeData.dark(useMaterial3: true).textTheme
         : ThemeData.light(useMaterial3: true).textTheme;
 
-    final latin = GoogleFonts.interTextTheme(base);
-    return GoogleFonts.notoSansMyanmarTextTheme(latin);
+    return GoogleFonts.interTextTheme(base);
   }
 
   static ThemeData light({double myanmarFontScale = 1.0}) {
@@ -52,15 +53,15 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.lightSearchFill,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(_inputRadius),
           borderSide: const BorderSide(color: AppColors.gold, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(_inputRadius),
           borderSide: const BorderSide(color: AppColors.gold, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
+          borderRadius: BorderRadius.circular(_inputRadius),
           borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
         ),
         contentPadding:
@@ -71,7 +72,7 @@ class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(_inputRadius),
           side: const BorderSide(color: AppColors.gold, width: 1),
         ),
       ),
@@ -88,19 +89,19 @@ class AppTheme {
     const brightness = Brightness.dark;
     final colorScheme = ColorScheme(
       brightness: brightness,
-      primary: AppColors.goldDark,
+      primary: AppColors.gold,
       onPrimary: AppColors.darkTitle,
-      secondary: AppColors.englishTabActiveTextDark,
+      secondary: AppColors.tabActiveGreen,
       onSecondary: AppColors.darkTitle,
       surface: AppColors.darkScaffold,
       onSurface: AppColors.darkTitle,
-      onSurfaceVariant: AppColors.darkMutedText,
-      outline: AppColors.goldDark,
-      outlineVariant: AppColors.goldDark.withValues(alpha: 0.5),
+      onSurfaceVariant: AppColors.grey400,
+      outline: AppColors.gold,
+      outlineVariant: AppColors.gold.withValues(alpha: 0.5),
       error: const Color(0xFFF2B8B5),
       onError: const Color(0xFF601410),
       tertiary: AppColors.englishTabActiveDark,
-      onTertiary: AppColors.englishTabActiveTextDark,
+      onTertiary: AppColors.tabActiveGreen,
     );
 
     return ThemeData(
@@ -117,21 +118,21 @@ class AppTheme {
         scrolledUnderElevation: 0,
         surfaceTintColor: Colors.transparent,
       ),
-      iconTheme: const IconThemeData(color: AppColors.goldDark, size: 22),
+      iconTheme: const IconThemeData(color: AppColors.gold, size: 22),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: AppColors.darkSearchFill,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppColors.goldDark, width: 1),
+          borderRadius: BorderRadius.circular(_inputRadius),
+          borderSide: const BorderSide(color: AppColors.gold, width: 1),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppColors.goldDark, width: 1),
+          borderRadius: BorderRadius.circular(_inputRadius),
+          borderSide: const BorderSide(color: AppColors.gold, width: 1),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(28),
-          borderSide: const BorderSide(color: AppColors.goldDark, width: 1.5),
+          borderRadius: BorderRadius.circular(_inputRadius),
+          borderSide: const BorderSide(color: AppColors.gold, width: 1.5),
         ),
         contentPadding:
             const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -141,8 +142,8 @@ class AppTheme {
         elevation: 0,
         margin: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(14),
-          side: const BorderSide(color: AppColors.goldDark, width: 1),
+          borderRadius: BorderRadius.circular(_inputRadius),
+          side: const BorderSide(color: AppColors.gold, width: 1),
         ),
       ),
       chipTheme: ChipThemeData(
@@ -161,11 +162,9 @@ class MyanmarTypography extends ThemeExtension<MyanmarTypography> {
   final double myanmarFontScale;
 
   TextStyle myanmar(BuildContext context, TextStyle base) {
-    return GoogleFonts.notoSansMyanmar(
+    return base.copyWith(
+      fontFamily: 'Padauk',
       fontSize: (base.fontSize ?? 16) * myanmarFontScale,
-      fontWeight: base.fontWeight,
-      color: base.color,
-      height: base.height,
     );
   }
 

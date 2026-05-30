@@ -66,7 +66,7 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: dbVersionAsync.when(
                   data: (v) => Text(v),
                   loading: () => const Text('Loading...'),
-                  error: (_, __) => const Text('Unknown'),
+                  error: (_, _) => const Text('Unknown'),
                 ),
               ),
               ListTile(
@@ -74,7 +74,7 @@ class SettingsScreen extends ConsumerWidget {
                 subtitle: entryCountAsync.when(
                   data: (c) => Text('$c words'),
                   loading: () => const Text('Loading...'),
-                  error: (_, __) => const Text('Unknown'),
+                  error: (_, _) => const Text('Unknown'),
                 ),
               ),
               ListTile(

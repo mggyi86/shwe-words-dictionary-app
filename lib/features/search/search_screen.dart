@@ -50,10 +50,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     final searchMode = ref.watch(searchModeProvider);
     final recentAsync = ref.watch(recentSearchesProvider);
     final isWide = MediaQuery.sizeOf(context).width >= 840;
-    final brightness = Theme.of(context).brightness;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      backgroundColor: AppColors.scaffoldBackground(brightness),
+      backgroundColor:
+          isDark ? AppColors.darkScaffold : const Color(0xFFF4F7F4),
       body: SafeArea(
         child: isWide
             ? _buildWideLayout(searchAsync, searchMode, recentAsync)
@@ -114,57 +115,69 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildBrandedHeader() {
-    final brightness = Theme.of(context).brightness;
-    final gold = AppColors.goldBorder(brightness);
-    final titleColor = AppColors.primaryText(brightness);
-    final subtitleColor = AppColors.mutedText(brightness);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final titleColor = isDark ? Colors.white : Colors.black87;
+    final subtitleColor = isDark ? Colors.grey[400]! : Colors.black54;
+    final iconColor =
+        isDark ? const Color(0xFFD4AF37) : Colors.black87;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 8, 4),
+      padding: const EdgeInsets.fromLTRB(16, 16, 8, 0),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const AppLogo(
             variant: AppLogoVariant.icon,
             height: 36,
             width: 36,
           ),
-          const SizedBox(width: 10),
+          const SizedBox(width: 12),
           Expanded(
-            child: RichText(
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              text: TextSpan(
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: titleColor,
-                      height: 1.25,
-                      fontSize: 14,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Text(
+                      AppConfig.appShortName,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: titleColor,
+                      ),
                     ),
-                children: [
-                  TextSpan(
-                    text: AppConfig.appShortName,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
-                  ),
-                  TextSpan(
-                    text: ' English Myanmar Dictionary',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: subtitleColor,
+                    Text(
+                      ' English Myanmar',
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w400,
+                        color: subtitleColor,
+                      ),
                     ),
+                  ],
+                ),
+                Text(
+                  'Dictionary',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w400,
+                    color: subtitleColor,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
           const OfflineIndicator(),
           IconButton(
             icon: const Icon(Icons.history_rounded),
-            color: gold,
+            color: iconColor,
             tooltip: 'History & Favorites',
             onPressed: () => context.push(AppRoutes.history),
           ),
+          const SizedBox(width: 16),
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            color: gold,
+            color: iconColor,
             tooltip: 'Settings',
             onPressed: () => context.push(AppRoutes.settings),
           ),
@@ -174,57 +187,59 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
   }
 
   Widget _buildSearchHeader(SearchMode searchMode) {
-    final brightness = Theme.of(context).brightness;
-    final gold = AppColors.goldBorder(brightness);
-    final fill = AppColors.searchFill(brightness);
-    final textColor = AppColors.primaryText(brightness);
-    final iconColor = AppColors.mutedText(brightness);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final searchIconColor = isDark ? Colors.grey[400]! : Colors.black54;
+    final hintColor = isDark ? Colors.grey[400]! : Colors.black54;
+    final inputTextColor = isDark ? Colors.white : Colors.black87;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
       child: Column(
         children: [
-          DecoratedBox(
+          Container(
+            height: 48,
             decoration: BoxDecoration(
-              color: fill,
-              borderRadius: BorderRadius.circular(28),
-              border: Border.all(color: gold, width: 1),
-              boxShadow: brightness == Brightness.light
-                  ? [
-                      BoxShadow(
-                        color: Colors.black.withValues(alpha: 0.04),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
+              color: isDark ? const Color(0xFF1C1C20) : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: isDark
+                  ? Border.all(
+                      color: const Color(0xFFD4AF37).withValues(alpha: 0.3),
+                    )
                   : null,
+              boxShadow: isDark
+                  ? null
+                  : [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.05),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
             ),
             child: TextField(
               controller: _controller,
               focusNode: _focusNode,
-              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                    color: textColor,
-                    fontSize: 16,
-                  ),
+              style: TextStyle(color: inputTextColor, fontSize: 16),
               decoration: InputDecoration(
+                isDense: true,
+                filled: false,
+                fillColor: Colors.transparent,
                 hintText: _hintForMode(searchMode),
-                hintStyle: TextStyle(color: iconColor.withValues(alpha: 0.8)),
+                hintStyle: TextStyle(color: hintColor),
                 border: InputBorder.none,
                 enabledBorder: InputBorder.none,
                 focusedBorder: InputBorder.none,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                prefixIcon: Icon(Icons.search_rounded, color: iconColor, size: 22),
-                suffixIcon: _controller.text.isNotEmpty
-                    ? IconButton(
-                        icon: Icon(Icons.close_rounded, color: iconColor, size: 20),
-                        onPressed: () {
-                          _controller.clear();
-                          ref.read(searchControllerProvider.notifier).clear();
-                          setState(() {});
-                        },
-                      )
-                    : null,
+                disabledBorder: InputBorder.none,
+                contentPadding: const EdgeInsets.symmetric(vertical: 14),
+                prefixIcon: Icon(Icons.search, color: searchIconColor),
+                suffixIcon: IconButton(
+                  icon: Icon(Icons.close, color: searchIconColor),
+                  onPressed: () {
+                    _controller.clear();
+                    ref.read(searchControllerProvider.notifier).clear();
+                    setState(() {});
+                  },
+                ),
               ),
               onChanged: (value) {
                 setState(() {});
@@ -235,7 +250,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               },
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
           SearchModeToggle(
             mode: searchMode,
             onChanged: (mode) {
@@ -249,6 +264,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
               }
             },
           ),
+          const SizedBox(height: 16),
         ],
       ),
     );
@@ -271,7 +287,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
         }
         return ListView.builder(
           controller: _scrollController,
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 16),
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
           itemCount: page.results.length + (page.hasMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index >= page.results.length) {
@@ -317,7 +333,7 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
     return recentAsync.when(
       loading: () => const SizedBox.shrink(),
-      error: (_, __) => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
       data: (recent) {
         if (recent.isEmpty) {
           return Center(
