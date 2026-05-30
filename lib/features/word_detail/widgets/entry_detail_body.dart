@@ -285,6 +285,8 @@ class _MeaningText extends StatelessWidget {
         );
   }
 
+  Color get _highlightColor => Color.lerp(contentColor, primaryColor, 0.82)!;
+
   TextStyle _applyMyanmarTypography(BuildContext context, String text, TextStyle base) {
     if (!MyanmarText.containsMyanmar(text)) return base;
     return myanmarStyle?.myanmar(context, base) ?? base;
@@ -307,8 +309,8 @@ class _MeaningText extends StatelessWidget {
       final englishStyle = _baseStyle(context, color: contentColor.withValues(alpha: 0.85));
       final myanmarBase = _baseStyle(
         context,
-        color: primaryColor,
-        weight: FontWeight.w600,
+        color: _highlightColor,
+        weight: FontWeight.w500,
       );
       final myanmarStyleResolved = _applyMyanmarTypography(
         context,
@@ -341,8 +343,8 @@ class _MeaningText extends StatelessWidget {
       line.text,
       _baseStyle(
         context,
-        color: isMyanmar ? primaryColor : contentColor,
-        weight: isMyanmar ? FontWeight.w600 : FontWeight.normal,
+        color: isMyanmar ? _highlightColor : contentColor,
+        weight: isMyanmar ? FontWeight.w500 : FontWeight.normal,
       ),
     );
 
@@ -410,9 +412,10 @@ class _DomainLine extends StatelessWidget {
   Widget build(BuildContext context) {
     final muted = AppColors.mutedText(Theme.of(context).brightness);
     final isMyanmar = MyanmarText.containsMyanmar(text);
+    final highlightColor = Color.lerp(contentColor, primaryColor, 0.82)!;
     final textStyle = Theme.of(context).textTheme.bodyLarge?.copyWith(
-          color: isMyanmar ? primaryColor : contentColor,
-          fontWeight: isMyanmar ? FontWeight.w600 : FontWeight.normal,
+          color: isMyanmar ? highlightColor : contentColor,
+          fontWeight: isMyanmar ? FontWeight.w500 : FontWeight.normal,
           height: 1.5,
         );
     final resolvedStyle = isMyanmar
@@ -484,9 +487,9 @@ class _ThesaurusSectionState extends ConsumerState<_ThesaurusSection> {
           height: 1.5,
         );
     final linkStyle = baseStyle?.copyWith(
-      color: AppColors.gold,
+      color: AppColors.gold.withValues(alpha: 0.9),
       decoration: TextDecoration.none,
-      fontWeight: FontWeight.w600,
+      fontWeight: FontWeight.w500,
     );
 
     return IntrinsicHeight(
